@@ -22,6 +22,9 @@ let interval = setInterval(() => {
     }
 }, delay);
 
+// Elements to update HTML content
+let value_t = document.getElementById('value_t');
+
 // Canvans and context to draw graphics in web page
 let canvas = document.getElementById('canvas');
 const width = 800;
@@ -35,17 +38,21 @@ const red = '#de6666';
 const green = '#66de66';
 const blue = '#6666de';
 
+mousePressed = ''; // If the mouse is pressed or not (to move points)
+mousePos = [0.0, 0.0]; // Position of mouse for moving points
+
 // 4 control points
-const B00 = [40, 40];
-const B01 = [100, 12];
-const B02 = [310, 250];
-const B03 = [200, 400];
+let B00 = [40, 40];
+let B01 = [100, 12];
+let B02 = [310, 250];
+let B03 = [200, 400];
 
 /**
  * Draw all points for Bézier curve (B1, B2 and B3)
  */
 function drawBezier(t) {
     drawBasics();
+    updateDom();
 
     B10 = [B00[0] + t * (B01[0] - B00[0]) / max, B00[1] + t * (B01[1] - B00[1]) / max];
     B11 = [B01[0] + t * (B02[0] - B01[0]) / max, B01[1] + t * (B02[1] - B01[1]) / max];
@@ -108,4 +115,52 @@ function drawLine(p1, p2, color) {
     ctx.moveTo(p1[0], p1[1])
     ctx.lineTo(p2[0], p2[1])
     ctx.stroke();
+}
+
+/**
+ * Updates the HTML document to display numerical values
+ */
+function updateDom() {
+    value_t.innerHTML = (t / max).toFixed(2);
+}
+
+canvas.addEventListener('mousedown', () => {
+    if (getDistance(mousePos, B00) < 10) {
+        mousePressed = 'B00';
+    }
+    if (getDistance(mousePos, B01) < 10) {
+        mousePressed = 'B01';
+    }
+    if (getDistance(mousePos, B02) < 10) {
+        mousePressed = 'B02';
+    }
+    if (getDistance(mousePos, B03) < 10) {
+        mousePressed = 'B03';
+    }
+}, false);
+
+canvas.addEventListener('mouseup', () => {
+    mousePressed = '';
+}, false);
+
+function manageMouse(event) {
+    mousePos = getMousePos(canvas, event);
+    switch (mousePressed) {
+        case 'B00': B00 = mousePos; break;
+        case 'B01': B01 = mousePos; break;
+        case 'B02': B02 = mousePos; break;
+        case 'B03': B03 = mousePos; break;
+    }
+}
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return [evt.clientX - rect.left, evt.clientY - rect.top];
+}
+
+/**
+ * Return distance between two points
+ */
+function getDistance(p1, p2) {
+    return Math.sqrt(Math.pow(p2[0] - p1[0], 2.0) + Math.pow(p2[1] - p1[1], 2.0));
 }

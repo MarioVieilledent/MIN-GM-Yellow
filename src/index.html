@@ -3,10 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
+
+    <title>MIN-GM, Yellow</title>
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIN-GM, Yellow</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bezier-curves.css">
 </head>
 
 <body>
@@ -31,11 +36,21 @@
         </div>
         <div class="content flex">
             <div class="left flex-col">
-
+                <div class="bezier-curves">
+                    <div class="block">
+                        <div class="property-value">
+                            <span class="property">t</span>
+                            <span class="equals">=</span>
+                            <span class="value" id="value_t"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="right flex-col">
-                <canvas id="canvas" width="800" height="500">
-                </canvas>
+                <div class="bezier-curves">
+                    <canvas id="canvas" onmousemove="manageMouse(event)" width="800" height="500">
+                    </canvas>
+                </div>
             </div>
         </div>
     </div>
