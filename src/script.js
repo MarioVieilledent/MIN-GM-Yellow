@@ -3,7 +3,7 @@ let reverse = false;
 const fps = 60.0; // Refresh rate for the animations
 let delay = 1000.0 / fps;
 
-let max = 300; // Number of steps to go from t=0 to t=1 for animations (each step is 1 frame)
+let max = 100; // Number of steps to go from t=0 to t=1 for animations (each step is 1 frame)
 
 let t = 0; // Variable modeling time or any x, B points are calculated depending on t: B(t)
 
@@ -47,6 +47,9 @@ let B01 = [100, 12];
 let B02 = [310, 250];
 let B03 = [200, 400];
 
+// Bézier curve
+let curve = [];
+
 /**
  * Draw all points for Bézier curve (B1, B2 and B3)
  */
@@ -58,22 +61,30 @@ function drawBezier(t) {
     B11 = [B01[0] + t * (B02[0] - B01[0]) / max, B01[1] + t * (B02[1] - B01[1]) / max];
     B12 = [B02[0] + t * (B03[0] - B02[0]) / max, B02[1] + t * (B03[1] - B02[1]) / max];
 
-    drawLine(B10, B11, blue);
-    drawLine(B11, B12, blue);
-    drawPoint(B10, 5, blue);
-    drawPoint(B11, 5, blue);
-    drawPoint(B12, 5, blue);
+    // drawLine(B10, B11, blue);
+    // drawLine(B11, B12, blue);
+    // drawPoint(B10, 5, blue);
+    // drawPoint(B11, 5, blue);
+    // drawPoint(B12, 5, blue);
 
     B20 = [B10[0] + t * (B11[0] - B10[0]) / max, B10[1] + t * (B11[1] - B10[1]) / max];
     B21 = [B11[0] + t * (B12[0] - B11[0]) / max, B11[1] + t * (B12[1] - B11[1]) / max];
 
-    drawLine(B20, B21, green);
-    drawPoint(B20, 5, green);
-    drawPoint(B21, 5, green);
+    // drawLine(B20, B21, green);
+    // drawPoint(B20, 5, green);
+    // drawPoint(B21, 5, green);
 
     B30 = [B20[0] + t * (B21[0] - B20[0]) / max, B20[1] + t * (B21[1] - B20[1]) / max];
 
     drawPoint(B30, 5, red);
+
+    if (curve.length < max * 2) {
+        curve.push(B30);
+    }
+
+    for (let i = 0; i < curve.length - 1; i++) {
+        drawLine(curve[i], curve[i + 1], blue);
+    }
 }
 
 /**
@@ -83,9 +94,9 @@ function drawBasics() {
     ctx.fillStyle = '#444342';
     ctx.fillRect(0, 0, width, height);
 
-    drawLine(B00, B01);
-    drawLine(B01, B02);
-    drawLine(B02, B03);
+    // drawLine(B00, B01);
+    // drawLine(B01, B02);
+    // drawLine(B02, B03);
 
     drawPoint(B00, 9, red);
     drawPoint(B01, 9, red);
@@ -140,6 +151,7 @@ canvas.addEventListener('mousedown', () => {
 }, false);
 
 canvas.addEventListener('mouseup', () => {
+    curve = [];
     mousePressed = '';
 }, false);
 
