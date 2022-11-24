@@ -1,11 +1,9 @@
 /**
+ * Not core of exercises, just better display.
+ * 
  * This file provides additional variables and functions
  * in order to display properly Bezier curves, and provides
  * some interaction (move points with the mouse).
- * 
- * All relevant variables, functions and algorithms about
- * Bezier curve calculus, Casteljau's algorithm are in
- * the script file ./src/exercises/Bezier_Curves.js
  */
 
 // Elements to update HTML content

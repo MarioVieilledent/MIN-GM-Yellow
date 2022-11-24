@@ -1,11 +1,15 @@
-let reverse = false;
-
-const fps = 60.0; // Refresh rate for the animations
-let delay = 1000.0 / fps;
+/**
+ * Script for Bézier Curves
+ */
 
 let n = 200; // Number of steps to go from t=0 to t=1 for animations (each step is 1 frame)
 let t = 0.0; // Variable going from 0 to 1 with n + 1 steps
 let step = 1.0 / n; // Increment and decrement value for t
+
+const fps = 60.0; // Refresh rate for the animations
+let delay = 1000.0 / fps;
+
+let reverse = false; // Move points from left to right or right to left
 
 // Setup of an infinite loop with delay for animation
 let interval = setInterval(() => {
@@ -22,13 +26,14 @@ let interval = setInterval(() => {
     }
 }, delay);
 
-// 4 control points that we can move around
+// 4 control with coordinates points that we can move around
 let B00 = [150, 350];
 let B01 = [250, 125];
 let B02 = [500, 125];
 let B03 = [600, 350];
 
-// Bezier curve
+// Bezier curve (the whole curve contains the n+1 steps and is stored once)
+// Curve is a list (for each steps) of a list (for each intermediate points) of points
 let curve = [];
 
 // First step, we calculate once the first Bezier curve
@@ -71,7 +76,7 @@ function drawIntermediates(t) {
 }
 
 /**
- * Draw only the curve (whole curve so no need of t parameter)
+ * Draw only the curve (whole curve so no need of variable t)
  */
 function drawCurve() {
     for (let i = 0; i < curve.length - 1; i++) {
@@ -80,8 +85,8 @@ function drawCurve() {
 }
 
 /**
- * For t going from 0 to 1 with n + 1 steps, calculate and memorize all values of intermediate points.
- * No drawing in the function, only calculus
+ * For t going from 0 to 1 with n + 1 steps, calculate and memorize all values of all intermediate points.
+ * Does not draw the curve, only save calculus
  */
 function calculateBezierCurve() {
     tempCurve = [];
@@ -95,17 +100,14 @@ function calculateBezierCurve() {
 
         B30 = casteljau(B20, B21, x);
 
-        // Curve is a list (for each steps) of a list (for each intermediate points)
         tempCurve.push([B10, B11, B12, B20, B21, B30]);
     }
     curve = tempCurve;
-    // drawCurve(); // After calculating whole Bezier curve, draw its result (only the curve)
 }
 
 /**
- * Given two points and t variable, calculate the next iteration with Casteljau's algorithm
+ * Given two points and t variable, calculate the next iteration with De Casteljau's algorithm
  */
 function casteljau(p1, p2, t) {
-    // return [p1[0] + t * (p2[0] - p1[0]) / max, p1[1] + t * (p2[1] - p1[1]) / max]; // Previous calculus, focusing on interpolating point between 2 points
-    return [t * p1[0] + (1 - t) * p2[0], t * p1[1] + (1 - t) * p2[1]]; // Casteljau's algorithm
+    return [(1 - t) * p1[0] + t * p2[0], (1 - t) * p1[1] + t * p2[1]]; // De Casteljau's algorithm
 }

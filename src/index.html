@@ -21,11 +21,14 @@
                 MIN-GM Project - Team Yellow
             </div>
             <div class="center flex">
-                <div class="nav-button">
+                <div class="nav-button" id="nav-button-page-1-introduction" onclick="displayPage(0)">
                     1. Introduction
                 </div>
-                <div class="nav-button">
+                <div class="nav-button" id="nav-button-page-2-bezier-curves" onclick="displayPage(1)">
                     2. Bézier Curves
+                </div>
+                <div class="nav-button" id="nav-button-page-3-bezier-surfaces" onclick="displayPage(2)">
+                    3. Bézier Surfaces
                 </div>
             </div>
             <div class="right flex">
@@ -35,53 +38,60 @@
             </div>
         </div>
         <div class="content flex">
-            <div class="left flex-col">
-                <div class="bezier-curves">
-                    <div class="block">
-                        <div class="property-value">
-                            <span class="property">t</span>
-                            <span class="equals">=</span>
-                            <span class="value" id="value_t"></span>
-                        </div>
-                        <div class="property-value">
-                            <span class="property">B00</span>
-                            <span class="equals">=</span>
-                            <span class="value" id="value_B00"></span>
-                        </div>
-                        <div class="property-value">
-                            <span class="property">B01</span>
-                            <span class="equals">=</span>
-                            <span class="value" id="value_B01"></span>
-                        </div>
-                        <div class="property-value">
-                            <span class="property">B02</span>
-                            <span class="equals">=</span>
-                            <span class="value" id="value_B02"></span>
-                        </div>
-                        <div class="property-value">
-                            <span class="property">B03</span>
-                            <span class="equals">=</span>
-                            <span class="value" id="value_B03"></span>
+            <div class="page-1-introduction" id="page-1-introduction">
+                <h3>Introduction</h3>
+            </div>
+            <div class="page-2-bezier-curves" id="page-2-bezier-curves">
+                <div class="left flex-col">
+                    <div class="bezier-curves">
+                        <div class="block">
+                            <div class="property-value">
+                                <span class="property">t</span>
+                                <span class="equals">=</span>
+                                <span class="value" id="value_t"></span>
+                            </div>
+                            <div class="property-value">
+                                <span class="property">B00</span>
+                                <span class="equals">=</span>
+                                <span class="value" id="value_B00"></span>
+                            </div>
+                            <div class="property-value">
+                                <span class="property">B01</span>
+                                <span class="equals">=</span>
+                                <span class="value" id="value_B01"></span>
+                            </div>
+                            <div class="property-value">
+                                <span class="property">B02</span>
+                                <span class="equals">=</span>
+                                <span class="value" id="value_B02"></span>
+                            </div>
+                            <div class="property-value">
+                                <span class="property">B03</span>
+                                <span class="equals">=</span>
+                                <span class="value" id="value_B03"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="right flex-col">
-                <div class="bezier-curves">
-                    <canvas id="canvas" onmousemove="manageMouse(event)" width="800" height="500">
-                    </canvas>
+                <div class="right flex-col">
+                    <div class="bezier-curves">
+                        <canvas id="canvas" onmousemove="manageMouse(event)" width="800" height="500">
+                        </canvas>
+                    </div>
                 </div>
+            </div>
+            <div class="page-3-bezier-surfaces" id="page-3-bezier-surfaces">
+
             </div>
         </div>
     </div>
-    <!-- Other script non relevant for exercises -->
-    <script src="./scripts/Bezier_Curves_Script.js"></script>
-
     <!-- Scripts for exercises -->
-    <script src="./exercises/Bezier_Curves.js"></script>
-    <script src="./exercises/Bezier_Surfaces.js"></script>
-    <script src="./exercises/B-Splines_And_NURBS_Curves.js"></script>
-    <script src="./exercises/NURBS_Curves.js"></script>
+    <script src="./exercise1/Bezier_Curves.js"></script>
+    <script src="./exercise2/dist/out.js"></script>
+
+    <!-- Other script non relevant for exercises -->
+    <script src="./scripts/framework.js"></script>
+    <script src="./exercise1/Bezier_Curves_Script.js"></script>
 </body>
 
 </html>
