@@ -53,7 +53,7 @@ function drawBasics() {
     drawLine(B01, B02, WHITE);
     drawLine(B02, B03, WHITE);
 
-    // Draw of curve
+    // Draw of the Bézier curve
     drawCurve();
 }
 
@@ -82,6 +82,23 @@ function drawLine(p1, p2, color) {
 }
 
 /**
+ * Draw an arrow in the canvas given two points
+ * Function from https://stackoverflow.com/questions/808826/draw-arrow-on-canvas-tag
+ */
+function drawArrow(p1, p2, color) {
+    var headlen = 10; // length of head in pixels
+    var dx = p2[0] - p1[0];
+    var dy = p2[1] - p1[1];
+    var angle = Math.atan2(dy, dx);
+    ctx.moveTo(p1[0], p1[1]);
+    ctx.strokeStyle = color;
+    ctx.lineTo(p2[0], p2[1]);
+    ctx.lineTo(p2[0] - headlen * Math.cos(angle - Math.PI / 6), p2[1] - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.moveTo(p2[0], p2[1]);
+    ctx.lineTo(p2[0] - headlen * Math.cos(angle + Math.PI / 6), p2[1] - headlen * Math.sin(angle + Math.PI / 6));
+}
+
+/**
  * Updates the HTML document to display numerical values
  */
 function updateDom() {
@@ -94,7 +111,7 @@ function updateDom() {
 }
 
 /**
- * 
+ * Event listener for mouse (to move the control points around)
  */
 canvas.addEventListener('mousedown', () => {
     if (getDistance(mousePos, B00) < 10) {
@@ -130,6 +147,9 @@ function manageMouse(event) {
     }
 }
 
+/**
+ * Return mouse position on canvas
+ */
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return [evt.clientX - rect.left, evt.clientY - rect.top];

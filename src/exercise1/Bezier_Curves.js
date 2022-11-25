@@ -40,7 +40,10 @@ let curve = [];
 calculateBezierCurve();
 
 /**
- * Draws intermediate points and lines of Bezier curve given a value for t
+ * Given a t, draws
+ * - intermediate points
+ * - intermediate lines
+ * - Tangent vector
  */
 function drawIntermediates(t) {
     drawBasics(); // Draw the control points, the control polygon, etc.
@@ -51,32 +54,39 @@ function drawIntermediates(t) {
     if (index < 0) { index = 0 }
     if (index >= curve.length) { index = curve.length - 1 }
 
-    // Retrieve all intermediate points stored
+    // Retrieves all intermediate points stored
     let B10 = curve[index][0];
     let B11 = curve[index][1];
     let B12 = curve[index][2];
+
     let B20 = curve[index][3];
     let B21 = curve[index][4];
+
     let B30 = curve[index][5];
 
-    // Draw B1 points and lines
+    let tangentVector = curve[index][6];
+
+    // Draws B1 points and lines
     drawLine(B10, B11, BLUE);
     drawLine(B11, B12, BLUE);
     drawPoint(B10, 5, BLUE);
     drawPoint(B11, 5, BLUE);
     drawPoint(B12, 5, BLUE);
 
-    // Draw B2 points and tangent line
+    // Draws B2 points and tangent line
     drawLine(B20, B21, GREEN);
     drawPoint(B20, 5, GREEN);
     drawPoint(B21, 5, GREEN);
 
-    // Draw B3 point
+    // Draws B3 point
     drawPoint(B30, 5, RED);
+
+    // Draws the tangent vector
+    drawArrow(B30, [B30[0] + tangentVector[0], B30[1] + tangentVector[1]], YELLOW);
 }
 
 /**
- * Draw only the curve (whole curve so no need of variable t)
+ * Draws only the curve (whole curve so no need of variable t)
  */
 function drawCurve() {
     for (let i = 0; i < curve.length - 1; i++) {
@@ -100,7 +110,10 @@ function calculateBezierCurve() {
 
         B30 = casteljau(B20, B21, x);
 
-        tempCurve.push([B10, B11, B12, B20, B21, B30]);
+        // Tangent vector = B21 - B20
+        tangentVector = [B21[0] - B20[0], B21[1] - B20[1]];
+
+        tempCurve.push([B10, B11, B12, B20, B21, B30, tangentVector]);
     }
     curve = tempCurve;
 }

@@ -2,12 +2,12 @@
 
 Project Work for MIN-GM, implementation of lecture applied for exercises in JavaScript.
 
-Group Yellow
+**Group Yellow**
 
 ![GitHub top language](https://img.shields.io/github/languages/top/MarioVieilledent/MIN-GM-Yellow)
 
 ## Members
-- 
+- Hesse Henri
 - Vieilledent Mario
 
 ## Run
