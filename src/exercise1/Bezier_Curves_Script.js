@@ -1,9 +1,10 @@
 /**
- * Not core of exercises, just better display.
+ * This file is not the core of exercise, it just supports the display.
  * 
- * This file provides additional variables and functions
- * in order to display properly Bezier curves, and provides
- * some interaction (move points with the mouse).
+ * This file provide function to display points, lines, arrow and curve
+ * with color in the canvas context.
+ * 
+ * There's also the code allowing user to move points in the canvas.
  */
 
 // Elements to update HTML content
@@ -14,13 +15,26 @@ let value_B02 = document.getElementById('value_B02');
 let value_B03 = document.getElementById('value_B03');
 
 // Canvas and context to draw graphics in web page
+let canvasHolder = document.getElementById('bezier-curves-canvas-holder');
 let canvas = document.getElementById('canvas');
-const width = 800;
-const height = 500;
 let ctx = canvas.getContext('2d');
+let width = 800;
+let height = 500;
+ctx.canvas.width = width;
+ctx.canvas.height = height;
 
 ctx.fillStyle = '#444342';
 ctx.fillRect(0, 0, width, height);
+
+// Observer to resize the canvas when window is resized
+function outputsize() {
+    width = canvasHolder.offsetWidth - 60;
+    height = canvasHolder.offsetHeight - 60;
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+}
+// outputsize();
+// new ResizeObserver(outputsize).observe(canvasHolder);
 
 const RED = '#de6666';
 const GREEN = '#66de66';
@@ -30,7 +44,6 @@ const MAGENTA = '#de66de';
 const CYAN = '#66dede';
 const BLACK = '#666666';
 const WHITE = '#dedede';
-
 
 mousePressed = ''; // If the mouse is pressed or not (to move points)
 mousePos = [0.0, 0.0]; // Position of mouse for moving points
@@ -52,9 +65,6 @@ function drawBasics() {
     drawLine(B00, B01, WHITE);
     drawLine(B01, B02, WHITE);
     drawLine(B02, B03, WHITE);
-
-    // Draw of the Bézier curve
-    drawCurve();
 }
 
 /**
@@ -86,16 +96,28 @@ function drawLine(p1, p2, color) {
  * Function from https://stackoverflow.com/questions/808826/draw-arrow-on-canvas-tag
  */
 function drawArrow(p1, p2, color) {
-    var headlen = 10; // length of head in pixels
-    var dx = p2[0] - p1[0];
-    var dy = p2[1] - p1[1];
-    var angle = Math.atan2(dy, dx);
+    let headlen = 10; // length of head in pixels
+    let dx = p2[0] - p1[0];
+    let dy = p2[1] - p1[1];
+    let angle = Math.atan2(dy, dx);
     ctx.moveTo(p1[0], p1[1]);
     ctx.strokeStyle = color;
     ctx.lineTo(p2[0], p2[1]);
+    ctx.stroke();
     ctx.lineTo(p2[0] - headlen * Math.cos(angle - Math.PI / 6), p2[1] - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.stroke();
     ctx.moveTo(p2[0], p2[1]);
     ctx.lineTo(p2[0] - headlen * Math.cos(angle + Math.PI / 6), p2[1] - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.stroke();
+}
+
+/**
+ * Draws only the curve (whole curve so no need of variable t)
+ */
+function drawCurve() {
+    for (let i = 0; i < curve.length - 1; i++) {
+        drawLine(curve[i][5], curve[i + 1][5], RED);
+    }
 }
 
 /**

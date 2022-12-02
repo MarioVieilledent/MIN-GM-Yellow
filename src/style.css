@@ -98,4 +98,9 @@ body {
     height: 100%;
 }
 
+.bezier-curves-canvas-holder {
+    width: 100%;
+    height: 100%;
+}
+
 .page-3-bezier-surfaces {}
