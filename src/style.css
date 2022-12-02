@@ -86,14 +86,14 @@ body {
     overflow: auto;
 }
 
-.page-2-bezier-curves>.left {
+.left-part {
     background-color: #2F3136;
     width: 250px;
     height: 100%;
     padding: 12px;
 }
 
-.page-2-bezier-curves>.right {
+.right-part {
     width: calc(100% - 250px);
     height: 100%;
 }
@@ -102,5 +102,3 @@ body {
     width: 100%;
     height: 100%;
 }
-
-.page-3-bezier-surfaces {}

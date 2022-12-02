@@ -11,19 +11,22 @@ const lastPageVisitedConst = 'lastPageVisited';
 let buttons = [
     document.getElementById('nav-button-page-1-introduction'),
     document.getElementById('nav-button-page-2-bezier-curves'),
-    document.getElementById('nav-button-page-3-bezier-surfaces')
+    document.getElementById('nav-button-page-3-bezier-surfaces'),
+    document.getElementById('nav-button-page-4-b-splines')
 ]
 
 let pages = [
     'page-1-introduction',
     'page-2-bezier-curves',
-    'page-3-bezier-surfaces'
+    'page-3-bezier-surfaces',
+    'page-4-b-splines'
 ];
 
 let divs = [
     document.getElementById(pages[0]),
     document.getElementById(pages[1]),
-    document.getElementById(pages[2])
+    document.getElementById(pages[2]),
+    document.getElementById(pages[3])
 ];
 
 openFirstPage();

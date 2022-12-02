@@ -30,6 +30,9 @@
                 <div class="nav-button" id="nav-button-page-3-bezier-surfaces" onclick="displayPage(2)">
                     3. Bézier Surfaces
                 </div>
+                <div class="nav-button" id="nav-button-page-4-b-splines" onclick="displayPage(3)">
+                    4. B-Spline
+                </div>
             </div>
             <div class="right flex">
                 <!-- <img class="header-img" src="assets/sun-solid.svg" alt="Sun logo to toggle dark theme"> -->
@@ -42,7 +45,7 @@
                 <h3>Introduction</h3>
             </div>
             <div class="page-2-bezier-curves" id="page-2-bezier-curves">
-                <div class="left flex-col">
+                <div class="left-part flex-col">
                     <div class="bezier-curves">
                         <div class="block">
                             <div class="property-value">
@@ -73,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="right flex-col">
+                <div class="right-part flex-col">
                     <div class="bezier-curves-canvas-holder" id="bezier-curves-canvas-holder">
                         <canvas id="canvas" onmousemove="manageMouse(event)">
                         </canvas>
@@ -83,15 +86,28 @@
             <div class="page-3-bezier-surfaces" id="page-3-bezier-surfaces">
 
             </div>
+            <div class="page-4-b-splines" id="page-4-b-splines">
+                <div class="left-part flex-col">
+                    <div>
+                        <div class="block">
+                            Choose of n, ui, di
+                        </div>
+                    </div>
+                </div>
+                <div class="right-part flex-col">
+                </div>
+            </div>
         </div>
     </div>
     <!-- Scripts for exercises -->
     <script src="./exercise1/Bezier_Curves.js"></script>
     <script src="./exercise2/dist/out.js"></script>
+    <script src="./exercise1/B_Splines.js"></script>
 
     <!-- Other script non relevant for exercises -->
     <script src="./scripts/framework.js"></script>
     <script src="./exercise1/Bezier_Curves_Script.js"></script>
+    <script src="./exercise1/B_Splines_Script.js"></script>
 </body>
 
 </html>
