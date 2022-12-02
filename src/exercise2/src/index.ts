@@ -20,7 +20,7 @@ export class App {
 
         this._renderer = new WebGLRenderer();
         this._renderer.setSize(window.innerWidth, window.innerHeight);
-        this.divForDisplay.appendChild(this._renderer.domElement);
+        this.divForDisplay?.appendChild(this._renderer.domElement);
         this._scene.background = new Color(0xffffff);
 
         //const geometry = new BoxGeometry(1, 1, 1);
@@ -45,7 +45,6 @@ export class App {
         let line = new LineSegments(wireframe);
         line.material.color.setHex(0x000000);
         this._scene.add(line);
-        this._scene.add(lol.getLines());
 
 
 

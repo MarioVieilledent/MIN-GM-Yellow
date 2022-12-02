@@ -85,11 +85,7 @@ export class BezierMesh {
                 g.add(node);
             })
         })
-        return g;
-    }
-
-    getLines():Group{
-        const g=new Group();
+        //get Lines
         for(let i=0;i<4;i++){
             const geometry = new BufferGeometry().setFromPoints( (this._nodes[i].map(p=>p.position) ));
             g.add(new Line( geometry, new LineBasicMaterial( { color: 0x00ffff } ) ));
