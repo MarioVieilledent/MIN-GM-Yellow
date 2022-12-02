@@ -19,8 +19,8 @@ export class App {
         this._camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
         this._renderer = new WebGLRenderer();
-        this._renderer.setSize(window.innerWidth, window.innerHeight);
-        this.divForDisplay.appendChild(this._renderer.domElement);
+        this._renderer.setSize(window.innerWidth, window.innerHeight-50);
+        this.divForDisplay?.appendChild(this._renderer.domElement);
         this._scene.background = new Color(0xffffff);
 
         //const geometry = new BoxGeometry(1, 1, 1);
@@ -45,7 +45,6 @@ export class App {
         let line = new LineSegments(wireframe);
         line.material.color.setHex(0x000000);
         this._scene.add(line);
-        this._scene.add(lol.getLines());
 
 
 
