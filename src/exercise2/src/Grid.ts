@@ -1,5 +1,7 @@
 import { BufferGeometry, Mesh, MeshBasicMaterial, PlaneGeometry } from "three";
 
+
+//Represents the final mesh
 export class MeshGrid extends PlaneGeometry {
     width: number;
     height: number;

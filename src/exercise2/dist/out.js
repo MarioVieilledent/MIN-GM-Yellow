@@ -18102,6 +18102,8 @@
         for (let y = 0; y < 4; y++) {
           const pos = new Vector3(xSize / 4 * (1 + 1 / 3) * x, 0, ySize / 4 * (1 + 1 / 3) * y);
           pos.y = this.random(-25, 25);
+          pos.x += this.random(-10, 10);
+          pos.z += this.random(-10, 10);
           const sphereMesh = new Mesh(new SphereGeometry(1, 32, 16), new MeshBasicMaterial({ color: 16776960 }));
           sphereMesh.position.set(pos.x, pos.y, pos.z);
           this._nodes[y].push(sphereMesh);
@@ -18109,24 +18111,24 @@
       }
     }
     applyNodesOnGrid() {
-      const vertices = this._gridMesh.attributes.position.array;
+      let vertices = this._gridMesh.attributes.position.array;
       for (let i = 0; i < vertices.length; i += 3) {
         const x = vertices[i];
+        const y = vertices[i + 1];
         const z = vertices[i + 2];
-        vertices[i + 1] = this.deCasteljauSurface(x, z);
+        for (let j = 0; j < 3; j++)
+          vertices[i + j] = this.deCasteljauSurface(x, y, z).toArray()[j];
       }
     }
-    deCasteljauSurface(u, v) {
+    deCasteljauSurface(u, v, w) {
       const x = 1 - u / this._gridMesh.width;
-      const y = 1 - v / this._gridMesh.height;
+      const z = 1 - w / this._gridMesh.height;
       const curve = new Array();
       for (let i = 0; i < this._nodes.length; i++) {
-        const row = this._nodes[i].map((s) => s.position).map((v2) => new Vector2(v2.y, v2.z));
-        const newY = this.deCasteljau(x, row);
-        const z = this._nodes[i].map((s) => s.position)[0].z;
-        curve.push(new Vector2(newY, z));
+        const row = this._nodes[i].map((s) => s.position);
+        curve.push(this.deCasteljau(x, row));
       }
-      return this.deCasteljau(y, curve);
+      return this.deCasteljau(z, curve);
     }
     deCasteljau(x, points) {
       if (points.length != 4)
@@ -18140,10 +18142,10 @@
       const B12 = this.lerp(B02, B03, x);
       const B20 = this.lerp(B10, B11, x);
       const B21 = this.lerp(B11, B12, x);
-      return this.lerp(B20, B21, x).x;
+      return this.lerp(B20, B21, x);
     }
     lerp(A, B, t) {
-      return new Vector2(t * A.x + (1 - t) * B.x, t * A.y + (1 - t) * B.y);
+      return new Vector3(t * A.x + (1 - t) * B.x, t * A.y + (1 - t) * B.y, t * A.z + (1 - t) * B.z);
     }
     random(min, max) {
       return Math.random() * (max - min) + min;

@@ -14,6 +14,7 @@ export class App {
 
     divForDisplay = document.getElementById('page-3-bezier-surfaces');
 
+    //threejs boilerplate and of course instantiation/execution of Mesh and Bezier ops on that Mesh
     constructor() {
         this._scene = new Scene();
         this._camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
