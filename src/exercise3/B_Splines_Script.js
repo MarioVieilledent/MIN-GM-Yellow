@@ -84,30 +84,16 @@ function drawBSplines() {
 
         calculEpsilons();
 
+        // Draws control points
         for (let i = 0; i < Di.length; i++) {
-            drawPoint(ctx_splines, scalePoint([Ui[i], Di[i]]), 5, GREEN);
+            drawPoint(ctx_splines, scalePoint([epsilons[i], Di[i]]), 5, BLUE);
+        }
+
+        // Draws lines between control points
+        for (let i = 0; i < Di.length - 1; i++) {
+            drawLine(ctx_splines, scalePoint([epsilons[i], Di[i]]), scalePoint([epsilons[i + 1], Di[i + 1]]), BLUE);
         }
     }
-}
-
-/**
- * Draws abscissa and its details
- */
-function drawAbscissa() {
-    // Draws abscissa
-    drawArrow(ctx_splines, [width / 2, graphHeight], [12, graphHeight], WHITE);
-    drawArrow(ctx_splines, [width / 2, graphHeight], [width - 12, graphHeight], WHITE);
-
-    // Draws marks
-    let abscissaStep = 1;
-    for (let i = Ui[0]; i <= Ui[Ui.length - 1]; i += abscissaStep) {
-        drawLine(ctx_splines, [scaleX(i), graphHeight - 6], [scaleX(i), graphHeight + 6], WHITE);
-    }
-
-    // Puts Ui values under abscissa
-    Ui.forEach(u => {
-        drawText(ctx_splines, [scaleX(u), graphHeight + 24], u + '', WHITE);
-    });
 }
 
 /**
@@ -132,6 +118,28 @@ function plotGraph() {
 function resetSplineCanvas() {
     ctx_splines.fillStyle = '#444342';
     ctx_splines.fillRect(0, 0, width, height);
+}
+
+/**
+ * Draws abscissa and its details
+ */
+function drawAbscissa() {
+    // Draws abscissa
+    drawArrow(ctx_splines, [width / 2, graphHeight], [12, graphHeight], WHITE);
+    drawArrow(ctx_splines, [width / 2, graphHeight], [width - 12, graphHeight], WHITE);
+
+    // Draws marks
+    let abscissaStep = 1;
+    for (let i = Ui[0]; i <= Ui[Ui.length - 1]; i += abscissaStep) {
+        setTimeout(() => { // REMOVES A BUG, I don't understand where does this bug comes from
+            drawLine(ctx_splines, [scaleX(i), graphHeight - 6], [scaleX(i), graphHeight + 6], WHITE);
+        }, i * 10);
+    }
+
+    // Puts Ui values under abscissa
+    Ui.forEach(u => {
+        drawText(ctx_splines, [scaleX(u), graphHeight + 24], u + '', WHITE);
+    });
 }
 
 /**
