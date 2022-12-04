@@ -11,7 +11,6 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="bezier-curves.css">
 </head>
 
 <body>
@@ -53,6 +52,8 @@
                                 <span class="equals">=</span>
                                 <span class="value" id="value_t"></span>
                             </div>
+                        </div>
+                        <div class="block">
                             <div class="property-value">
                                 <span class="property">B00</span>
                                 <span class="equals">=</span>
@@ -78,7 +79,7 @@
                 </div>
                 <div class="right-part flex-col">
                     <div class="bezier-curves-canvas-holder" id="bezier-curves-canvas-holder">
-                        <canvas id="canvas" onmousemove="manageMouse(event)">
+                        <canvas id="canvas-ex1" onmousemove="manageMouse(event)">
                         </canvas>
                     </div>
                 </div>
@@ -90,11 +91,34 @@
                 <div class="left-part flex-col">
                     <div>
                         <div class="block">
-                            Choose of n, ui, di
+                            <div class="property-value">
+                                <span class="property">n</span>
+                                <span class="equals">=</span>
+                                <input id="n_input_selector" type="number" min="1" max="100" value="2">
+                            </div>
+                        </div>
+                        <div class="block">
+                            <div class="property-value"
+                                title="Should be a list of increasing numbers (or staying equal)">
+                                <span class="property">Ui</span>
+                                <span class="equals">=</span>
+                                <input id="Ui_input_selector" class="large-input" type="text">
+                            </div>
+                        </div>
+                        <div class="block">
+                            <div class="property-value">
+                                <span class="property">Di</span>
+                                <span class="equals">=</span>
+                                <input id="Di_input_selector" class="large-input" type="text">
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="right-part flex-col">
+                    <div class="b-splines-canvas-holder" id="b-splines-canvas-holder">
+                        <canvas id="canvas-ex3">
+                        </canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,12 +126,13 @@
     <!-- Scripts for exercises -->
     <script src="./exercise1/Bezier_Curves.js"></script>
     <script src="./exercise2/dist/out.js"></script>
-    <script src="./exercise1/B_Splines.js"></script>
+    <script src="./exercise3/B_Splines.js"></script>
 
     <!-- Other script non relevant for exercises -->
     <script src="./scripts/framework.js"></script>
+    <script src="./scripts/canvasDrawer.js"></script>
     <script src="./exercise1/Bezier_Curves_Script.js"></script>
-    <script src="./exercise1/B_Splines_Script.js"></script>
+    <script src="./exercise3/B_Splines_Script.js"></script>
 </body>
 
 </html>

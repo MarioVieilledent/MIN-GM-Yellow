@@ -15,35 +15,24 @@ let value_B02 = document.getElementById('value_B02');
 let value_B03 = document.getElementById('value_B03');
 
 // Canvas and context to draw graphics in web page
-let canvasHolder = document.getElementById('bezier-curves-canvas-holder');
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
-let width = 800;
-let height = 500;
-ctx.canvas.width = width;
-ctx.canvas.height = height;
+let canvas_bezier_holder = document.getElementById('bezier-curves-canvas-holder');
+let canvas_bezier = document.getElementById('canvas-ex1');
+let ctx_bezier = canvas_bezier.getContext('2d');
+ctx_bezier.canvas.width = width;
+ctx_bezier.canvas.height = height;
 
-ctx.fillStyle = '#444342';
-ctx.fillRect(0, 0, width, height);
+ctx_bezier.fillStyle = BG_CANVAS_COLOR;
+ctx_bezier.fillRect(0, 0, width, height);
 
 // Observer to resize the canvas when window is resized
 function outputsize() {
     width = canvasHolder.offsetWidth - 60;
     height = canvasHolder.offsetHeight - 60;
-    ctx.canvas.width = width;
-    ctx.canvas.height = height;
+    ctx_bezier.canvas.width = width;
+    ctx_bezier.canvas.height = height;
 }
 // outputsize();
 // new ResizeObserver(outputsize).observe(canvasHolder);
-
-const RED = '#de6666';
-const GREEN = '#66de66';
-const BLUE = '#6666de';
-const YELLOW = '#dede66';
-const MAGENTA = '#de66de';
-const CYAN = '#66dede';
-const BLACK = '#666666';
-const WHITE = '#dedede';
 
 mousePressed = ''; // If the mouse is pressed or not (to move points)
 mousePos = [0.0, 0.0]; // Position of mouse for moving points
@@ -51,73 +40,20 @@ mousePos = [0.0, 0.0]; // Position of mouse for moving points
 /**
  * Draws the known elements for the Bezier curve (control polygons and its 4 points)
  */
-function drawBasics() {
-    ctx.fillStyle = '#444342';
-    ctx.fillRect(0, 0, width, height);
+function drawBasicsBezrier() {
+    ctx_bezier.fillStyle = '#444342';
+    ctx_bezier.fillRect(0, 0, width, height);
 
     // Draw of 4 control points
-    drawPoint(B00, 9, WHITE);
-    drawPoint(B01, 9, WHITE);
-    drawPoint(B02, 9, WHITE);
-    drawPoint(B03, 9, WHITE);
+    drawPoint(ctx_bezier, B00, 9, WHITE);
+    drawPoint(ctx_bezier, B01, 9, WHITE);
+    drawPoint(ctx_bezier, B02, 9, WHITE);
+    drawPoint(ctx_bezier, B03, 9, WHITE);
 
     // Draw of 3 lines
-    drawLine(B00, B01, WHITE);
-    drawLine(B01, B02, WHITE);
-    drawLine(B02, B03, WHITE);
-}
-
-/**
- * Draws a point in the canvas given x and y
- * @param {*} point, array of two numbers [x, y]
- * @param {*} radius of the point (number)
- * @param {*} color, hex value for the point's color
- */
-function drawPoint(point, radius, color) {
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.arc(point[0], point[1], radius, 0.0, 2.0 * Math.PI);
-    ctx.fill();
-}
-
-/**
- * Draw a line in the canvas given two points
- */
-function drawLine(p1, p2, color) {
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.moveTo(p1[0], p1[1])
-    ctx.lineTo(p2[0], p2[1])
-    ctx.stroke();
-}
-
-/**
- * Draw an arrow in the canvas given two points
- * Function from https://stackoverflow.com/questions/808826/draw-arrow-on-canvas-tag
- */
-function drawArrow(p1, p2, color) {
-    let headlen = 10; // length of head in pixels
-    let dx = p2[0] - p1[0];
-    let dy = p2[1] - p1[1];
-    let angle = Math.atan2(dy, dx);
-    ctx.moveTo(p1[0], p1[1]);
-    ctx.strokeStyle = color;
-    ctx.lineTo(p2[0], p2[1]);
-    ctx.stroke();
-    ctx.lineTo(p2[0] - headlen * Math.cos(angle - Math.PI / 6), p2[1] - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.stroke();
-    ctx.moveTo(p2[0], p2[1]);
-    ctx.lineTo(p2[0] - headlen * Math.cos(angle + Math.PI / 6), p2[1] - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.stroke();
-}
-
-/**
- * Draws only the curve (whole curve so no need of variable t)
- */
-function drawCurve() {
-    for (let i = 0; i < curve.length - 1; i++) {
-        drawLine(curve[i][5], curve[i + 1][5], RED);
-    }
+    drawLine(ctx_bezier, B00, B01, WHITE);
+    drawLine(ctx_bezier, B01, B02, WHITE);
+    drawLine(ctx_bezier, B02, B03, WHITE);
 }
 
 /**
@@ -135,7 +71,7 @@ function updateDom() {
 /**
  * Event listener for mouse (to move the control points around)
  */
-canvas.addEventListener('mousedown', () => {
+canvas_bezier.addEventListener('mousedown', () => {
     if (getDistance(mousePos, B00) < 10) {
         mousePressed = 'B00';
     }
@@ -150,7 +86,7 @@ canvas.addEventListener('mousedown', () => {
     }
 }, false);
 
-canvas.addEventListener('mouseup', () => {
+canvas_bezier.addEventListener('mouseup', () => {
     mousePressed = '';
 }, false);
 
@@ -160,7 +96,7 @@ canvas.addEventListener('mouseup', () => {
  * 2) Calculate the whole new Bezier curve
  */
 function manageMouse(event) {
-    mousePos = getMousePos(canvas, event);
+    mousePos = getMousePos(canvas_bezier, event);
     switch (mousePressed) {
         case 'B00': B00 = mousePos; calculateBezierCurve(); break;
         case 'B01': B01 = mousePos; calculateBezierCurve(); break;
@@ -175,11 +111,4 @@ function manageMouse(event) {
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return [evt.clientX - rect.left, evt.clientY - rect.top];
-}
-
-/**
- * Return distance between two points
- */
-function getDistance(p1, p2) {
-    return Math.sqrt(Math.pow(p2[0] - p1[0], 2.0) + Math.pow(p2[1] - p1[1], 2.0));
 }

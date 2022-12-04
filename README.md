@@ -1,46 +1,59 @@
 # Geometric Modelling Project Work
 
-Project Work for MIN-GM, implementation of lecture applied for exercises in JavaScript.
-
-**Group Yellow**
-
 ![GitHub top language](https://img.shields.io/github/languages/top/MarioVieilledent/MIN-GM-Yellow)
 
-## Members
-- Hesse Henri
-- Vieilledent Mario
+Project Work for MIN-GM, **Group Yellow**.
 
 ## Run
 
-Open the file `./src/index.html`.
+> Open the file `./src/index.html`.
 
-# 2. Bézier Curve
+## 1. Introduction
+
+### Members
+- Hesse Henri
+- Vieilledent Mario
+
+### Work repartition
+
+- Mario Vieilledent took care of 2D implementation of algorithms for Bézier Curves and B-Splines using canvas and JS.
+- Hesse Henri adapted the algorithm for 3D spaces using the library `three.js` and using TypeScript. 
+
+## 2. Bézier Curve
 
 > Core file for this exercise is `./exercise1/Bezier_Curves.js`
 
-## Language & features
+### Language & features
 
-Raw JavaScript, use of HTML canvas for drawing points and lines in web page.
+Raw JavaScript is used, HTML canvas for drawing points and lines in web page.
 
-## Casteljau’s algorithm
+### Casteljau’s algorithm
 
 This pretty formula is to prove the power of md files.
 $$B_j^n(t)=\binom{n}{j}t^j(1-t)^{n-j}$$
 
-# 3. Bézier Surface
+## 3. Bézier Surface
 
 > Core file for this exercise is `./exercise2/src/Bezier.ts`
 
-## Language & features
+### Language & features
 
 Made in TypeScript with `three.js`.
 
-## Build js dest file
+### Build js dest file
 
-Dist js file is already transpiled. Otherwise,
+JS script is already transpiled. Otherwise,
 
 `npm install`
 
 `npm run build`
 
-Open either with`./exercise2/dist/index.html` for test or `./index.html` then page `3. Bézier Surfaces`.
+Open either with`./exercise2/dist/index.html` for test, or `./index.html` on page `3. Bézier Surfaces`.
+
+## 4. B-Splines
+
+> Core file for this exercise is `./exercise3/B_Splines.js`
+
+### Language & features
+
+Raw JavaScript is used, HTML canvas for drawing points and lines in web page.

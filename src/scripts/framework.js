@@ -2,8 +2,7 @@
 /**
  * Not core of exercises, just js glue.
  * 
- * This file provides a simple js framework
- * in order to get a nice display and make website dynamic
+ * This file provides a simple, and pretty bad, js framework
  */
 
 const lastPageVisitedConst = 'lastPageVisited';
@@ -44,6 +43,8 @@ function openFirstPage() {
 
 function displayPage(pageId) {
     if (pages[pageId]) {
+        // If page is Bézier curve, initialization of animation
+        initBezrierCurves();
         // Hide all pages
         divs.forEach(div => {
             div.style.display = 'none';
