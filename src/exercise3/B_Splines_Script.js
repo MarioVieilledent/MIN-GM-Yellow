@@ -73,6 +73,10 @@ Di_input_selector.addEventListener('change', event => {
 function drawBSplines() {
     // Checks if Ui and Di values are conform
     if (UiOk && DiOk) {
+
+        // Calcul once epsilons
+        calculEpsilons();
+
         // Calculates scales transformations
         plotGraph();
 
@@ -81,8 +85,6 @@ function drawBSplines() {
 
         // Draws abscissa lines and details
         drawAbscissa();
-
-        calculEpsilons();
 
         // Draws control points
         for (let i = 0; i < Di.length; i++) {
@@ -132,13 +134,19 @@ function drawAbscissa() {
     let abscissaStep = 1;
     for (let i = Ui[0]; i <= Ui[Ui.length - 1]; i += abscissaStep) {
         setTimeout(() => { // REMOVES A BUG, I don't understand where does this bug comes from
-            drawLine(ctx_splines, [scaleX(i), graphHeight - 6], [scaleX(i), graphHeight + 6], WHITE);
+            drawLine(ctx_splines, [scaleX(i), graphHeight - 3], [scaleX(i), graphHeight + 3], WHITE);
         }, i * 10);
     }
 
     // Puts Ui values under abscissa
     Ui.forEach(u => {
-        drawText(ctx_splines, [scaleX(u), graphHeight + 24], u + '', WHITE);
+        drawText(ctx_splines, [scaleX(u) - 4, graphHeight + 24], u + '', 16, WHITE);
+    });
+
+    // Puts Epsilons values under abscissa
+    epsilons.forEach(e => {
+        drawTriangle(ctx_splines, [scaleX(e), graphHeight], GREY);
+        drawText(ctx_splines, [scaleX(e) - 4, graphHeight - 18], e + '', 12, WHITE);
     });
 }
 
@@ -164,7 +172,7 @@ function scaleY(value) {
 }
 
 /**
- * Function of checking and parsing user input
+ * Function that checks and parses user input
  * for values of u and d (that I called Ui and Di)
  * 
  * I hope final grade does not take in consideration quality of code...

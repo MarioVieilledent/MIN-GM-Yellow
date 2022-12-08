@@ -14,6 +14,7 @@ const YELLOW = '#dede66';
 const MAGENTA = '#de66de';
 const CYAN = '#66dede';
 const BLACK = '#666666';
+const GREY = '#aaaaaa';
 const WHITE = '#dedede';
 
 // Dimension for canvas
@@ -62,20 +63,35 @@ function drawArrow(ctx, p1, p2, color) {
 }
 
 /**
+ * Draws a triangle
+ * Used for epsilons abscissas in the b-spline exercise
+ */
+function drawTriangle(ctx, p, color) {
+    ctx.strokeStyle = color;
+    ctx.moveTo(p[0], p[1]);
+    ctx.lineTo(p[0] + 3, p[1] - 10);
+    ctx.stroke();
+    ctx.lineTo(p[0] - 3, p[1] - 10);
+    ctx.stroke();
+    ctx.lineTo(p[0], p[1]);
+    ctx.stroke();
+}
+
+/**
  * Draws only the Bézier curve (whole curve so no need of variable t)
  */
-function drawBezierCurve(ctx) {
-    for (let i = 0; i < curve.length - 1; i++) {
-        drawLine(ctx, curve[i][5], curve[i + 1][5], RED);
+function drawBezierCurve(ctx, bezierCurve) {
+    for (let i = 0; i < bezierCurve.curve.length - 1; i++) {
+        drawLine(ctx, bezierCurve.curve[i][5], bezierCurve.curve[i + 1][5], RED);
     }
 }
 
 /**
  * Write a text
  */
-function drawText(ctx, point, text, color) {
+function drawText(ctx, point, text, size, color) {
     ctx.fillStyle = color;
-    ctx.font = '14px Arial';
+    ctx.font = `${size}px Arial`;
     ctx.fillText(text, point[0], point[1]);
 }
 

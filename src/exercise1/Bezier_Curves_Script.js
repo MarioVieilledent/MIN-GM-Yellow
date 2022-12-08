@@ -45,43 +45,43 @@ function drawBasicsBezrier() {
     ctx_bezier.fillRect(0, 0, width, height);
 
     // Draw of 4 control points
-    drawPoint(ctx_bezier, B00, 9, WHITE);
-    drawPoint(ctx_bezier, B01, 9, WHITE);
-    drawPoint(ctx_bezier, B02, 9, WHITE);
-    drawPoint(ctx_bezier, B03, 9, WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B00, 9, WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B01, 9, WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B02, 9, WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B03, 9, WHITE);
 
     // Draw of 3 lines
-    drawLine(ctx_bezier, B00, B01, WHITE);
-    drawLine(ctx_bezier, B01, B02, WHITE);
-    drawLine(ctx_bezier, B02, B03, WHITE);
+    drawLine(ctx_bezier, bezierCurve.B00, bezierCurve.B01, WHITE);
+    drawLine(ctx_bezier, bezierCurve.B01, bezierCurve.B02, WHITE);
+    drawLine(ctx_bezier, bezierCurve.B02, bezierCurve.B03, WHITE);
 }
 
 /**
  * Updates the HTML document to display numerical values
  */
 function updateDom() {
-    value_t.innerHTML = (t).toFixed(2);
+    value_t.innerHTML = (bezierCurve.t).toFixed(2);
 
-    value_B00.innerHTML = (`[${B00[0]}, ${B00[1]}]`);
-    value_B01.innerHTML = (`[${B01[0]}, ${B01[1]}]`);
-    value_B02.innerHTML = (`[${B02[0]}, ${B02[1]}]`);
-    value_B03.innerHTML = (`[${B03[0]}, ${B03[1]}]`);
+    value_B00.innerHTML = (`[${bezierCurve.B00[0]}, ${bezierCurve.B00[1]}]`);
+    value_B01.innerHTML = (`[${bezierCurve.B01[0]}, ${bezierCurve.B01[1]}]`);
+    value_B02.innerHTML = (`[${bezierCurve.B02[0]}, ${bezierCurve.B02[1]}]`);
+    value_B03.innerHTML = (`[${bezierCurve.B03[0]}, ${bezierCurve.B03[1]}]`);
 }
 
 /**
  * Event listener for mouse (to move the control points around)
  */
 canvas_bezier.addEventListener('mousedown', () => {
-    if (getDistance(mousePos, B00) < 10) {
+    if (getDistance(mousePos, bezierCurve.B00) < 10) {
         mousePressed = 'B00';
     }
-    if (getDistance(mousePos, B01) < 10) {
+    if (getDistance(mousePos, bezierCurve.B01) < 10) {
         mousePressed = 'B01';
     }
-    if (getDistance(mousePos, B02) < 10) {
+    if (getDistance(mousePos, bezierCurve.B02) < 10) {
         mousePressed = 'B02';
     }
-    if (getDistance(mousePos, B03) < 10) {
+    if (getDistance(mousePos, bezierCurve.B03) < 10) {
         mousePressed = 'B03';
     }
 }, false);
@@ -98,10 +98,10 @@ canvas_bezier.addEventListener('mouseup', () => {
 function manageMouse(event) {
     mousePos = getMousePos(canvas_bezier, event);
     switch (mousePressed) {
-        case 'B00': B00 = mousePos; calculateBezierCurve(); break;
-        case 'B01': B01 = mousePos; calculateBezierCurve(); break;
-        case 'B02': B02 = mousePos; calculateBezierCurve(); break;
-        case 'B03': B03 = mousePos; calculateBezierCurve(); break;
+        case 'B00': bezierCurve.B00 = mousePos; bezierCurve.DeCasteljau(); break;
+        case 'B01': bezierCurve.B01 = mousePos; bezierCurve.DeCasteljau(); break;
+        case 'B02': bezierCurve.B02 = mousePos; bezierCurve.DeCasteljau(); break;
+        case 'B03': bezierCurve.B03 = mousePos; bezierCurve.DeCasteljau(); break;
     }
 }
 
