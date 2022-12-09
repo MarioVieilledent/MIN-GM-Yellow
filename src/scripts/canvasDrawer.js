@@ -14,7 +14,7 @@ const YELLOW = '#dede66';
 const MAGENTA = '#de66de';
 const CYAN = '#66dede';
 const BLACK = '#666666';
-const GREY = '#aaaaaa';
+const GREY = '#777777';
 const WHITE = '#dedede';
 
 // Dimension for canvas

@@ -2,10 +2,38 @@
  * This file is not the core of exercise, it just supports the display.
  * 
  * This file provide function to display points, lines, arrow and curve
- * with color in the canvas context.
- * 
- * There's also the code allowing user to move points in the canvas.
+ * it is also in charge of animation and interaction with the curve.
  */
+
+// Animation
+const fps = 60.0; // Refresh rate for the animations
+let delay = 1000.0 / fps; // Delay in ms between each frame
+let reverse = false; // Once t reached 1, t goes back to 0 (reverse is then true)
+
+let alreadyInit = false; // Init only once Bézier curves animation
+let interval; // Animation of Bézier curve
+
+
+// Main object with which the animation and the interaction is made
+let bezierCurve = new BezierCurve;
+
+/**
+ * Function called when user open the page for Bézier curves
+ */
+function initBezrierCurves() {
+    if (!alreadyInit) {
+        alreadyInit = true;
+        // First step, we calculate once the first Bezier curve
+        bezierCurve.DeCasteljau();
+
+        // Setup of an infinite loop with delay for animation
+        interval = setInterval(() => {
+            drawIntermediates(bezierCurve.t);
+            !reverse && bezierCurve.t < 1.0 ? bezierCurve.t += bezierCurve.step : reverse = true;
+            reverse && bezierCurve.t > 0.0 ? bezierCurve.t -= bezierCurve.step : reverse = false;
+        }, delay);
+    }
+}
 
 // Elements to update HTML content
 let value_t = document.getElementById('value_t');
@@ -24,6 +52,9 @@ ctx_bezier.canvas.height = height;
 ctx_bezier.fillStyle = BG_CANVAS_COLOR;
 ctx_bezier.fillRect(0, 0, width, height);
 
+// Control point radius
+const controlPointRadius = 20;
+
 // Observer to resize the canvas when window is resized
 function outputsize() {
     width = canvasHolder.offsetWidth - 60;
@@ -40,20 +71,77 @@ mousePos = [0.0, 0.0]; // Position of mouse for moving points
 /**
  * Draws the known elements for the Bezier curve (control polygons and its 4 points)
  */
-function drawBasicsBezrier() {
+function drawBasicsBezier() {
     ctx_bezier.fillStyle = '#444342';
     ctx_bezier.fillRect(0, 0, width, height);
 
     // Draw of 4 control points
-    drawPoint(ctx_bezier, bezierCurve.B00, 9, WHITE);
-    drawPoint(ctx_bezier, bezierCurve.B01, 9, WHITE);
-    drawPoint(ctx_bezier, bezierCurve.B02, 9, WHITE);
-    drawPoint(ctx_bezier, bezierCurve.B03, 9, WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B00, controlPointRadius, GREY);
+    drawPoint(ctx_bezier, bezierCurve.B01, controlPointRadius, GREY);
+    drawPoint(ctx_bezier, bezierCurve.B02, controlPointRadius, GREY);
+    drawPoint(ctx_bezier, bezierCurve.B03, controlPointRadius, GREY);
+
+    // Draw Bernstein polynomial for each control point
+    drawPoint(ctx_bezier, bezierCurve.B00, controlPointRadius * Math.abs(bezierCurve.Bpol30(bezierCurve.t)), WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B01, controlPointRadius * Math.abs(bezierCurve.Bpol31(bezierCurve.t)), WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B02, controlPointRadius * Math.abs(bezierCurve.Bpol32(bezierCurve.t)), WHITE);
+    drawPoint(ctx_bezier, bezierCurve.B03, controlPointRadius * Math.abs(bezierCurve.Bpol33(bezierCurve.t)), WHITE);
+
 
     // Draw of 3 lines
     drawLine(ctx_bezier, bezierCurve.B00, bezierCurve.B01, WHITE);
     drawLine(ctx_bezier, bezierCurve.B01, bezierCurve.B02, WHITE);
     drawLine(ctx_bezier, bezierCurve.B02, bezierCurve.B03, WHITE);
+}
+
+
+/**
+ * Given a t, draws intermediate points, lines and the tangent vector
+ */
+function drawIntermediates(t) {
+    drawBasicsBezier(); // Draws the control points
+    updateDom(); // Displays values (like value of t) into the web page
+
+    // Gets index for the list with rounding t * steps into an integer
+    let index = Math.round(t * bezierCurve.steps);
+    if (index < 0) { index = 0 }
+    if (index >= bezierCurve.curve.length) { index = bezierCurve.curve.length - 1 }
+
+    // Retrieves all intermediate points and tangent vector stored
+    let B10 = bezierCurve.curve[index][0];
+    let B11 = bezierCurve.curve[index][1];
+    let B12 = bezierCurve.curve[index][2];
+    let B20 = bezierCurve.curve[index][3];
+    let B21 = bezierCurve.curve[index][4];
+    let B30 = bezierCurve.curve[index][5];
+    let tangentVector = bezierCurve.curve[index][6];
+
+    // Draws B1 points and lines
+    drawLine(ctx_bezier, B10, B11, BLUE);
+    drawLine(ctx_bezier, B11, B12, BLUE);
+    drawPoint(ctx_bezier, B10, 5, BLUE);
+    drawPoint(ctx_bezier, B11, 5, BLUE);
+    drawPoint(ctx_bezier, B12, 5, BLUE);
+
+    // Draws B2 points and tangent line
+    drawLine(ctx_bezier, B20, B21, GREEN);
+    drawPoint(ctx_bezier, B20, 5, GREEN);
+    drawPoint(ctx_bezier, B21, 5, GREEN);
+
+    // Draws B3 point
+    drawPoint(ctx_bezier, B30, 5, RED);
+
+    // Draws the tangent vector
+    // The display of tangent vector is an arrow starting from B30 and pointing to B30 + tangentVector
+    if (reverse) {
+        // If the animation is going backwards (from t=1 to t=0), the arrow should be in the opposite direction, same length
+        drawArrow(ctx_bezier, B30, [B30[0] - tangentVector[0], B30[1] - tangentVector[1]], YELLOW);
+    } else {
+        drawArrow(ctx_bezier, B30, [B30[0] + tangentVector[0], B30[1] + tangentVector[1]], YELLOW);
+    }
+
+    // Draw of the Bézier curve
+    drawBezierCurve(ctx_bezier, bezierCurve);
 }
 
 /**
@@ -72,16 +160,16 @@ function updateDom() {
  * Event listener for mouse (to move the control points around)
  */
 canvas_bezier.addEventListener('mousedown', () => {
-    if (getDistance(mousePos, bezierCurve.B00) < 10) {
+    if (getDistance(mousePos, bezierCurve.B00) < controlPointRadius) {
         mousePressed = 'B00';
     }
-    if (getDistance(mousePos, bezierCurve.B01) < 10) {
+    if (getDistance(mousePos, bezierCurve.B01) < controlPointRadius) {
         mousePressed = 'B01';
     }
-    if (getDistance(mousePos, bezierCurve.B02) < 10) {
+    if (getDistance(mousePos, bezierCurve.B02) < controlPointRadius) {
         mousePressed = 'B02';
     }
-    if (getDistance(mousePos, bezierCurve.B03) < 10) {
+    if (getDistance(mousePos, bezierCurve.B03) < controlPointRadius) {
         mousePressed = 'B03';
     }
 }, false);

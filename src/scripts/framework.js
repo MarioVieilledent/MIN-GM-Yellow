@@ -28,18 +28,18 @@ let divs = [
     document.getElementById(pages[3])
 ];
 
-openFirstPage();
-
-function openFirstPage() {
+/**
+ * When all script is loaded, open the saved page
+ */
+window.addEventListener('load', function () {
     // Get last page in localStorage
     let lastPageVisited = localStorage.getItem(lastPageVisitedConst);
-
     if (lastPageVisited) {
         displayPage(lastPageVisited);
     } else { // If no page saved in localStorage, open first page
         displayPage(0);
     }
-}
+})
 
 function displayPage(pageId) {
     if (pages[pageId]) {

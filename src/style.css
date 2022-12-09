@@ -118,7 +118,7 @@ body {
     font-size: 16px;
 }
 
-.block>.property-value>.equals {
+page-2-bezier-curves .block>.property-value>.equals {
     font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
 }
@@ -138,4 +138,10 @@ input {
 
 .large-input {
     width: 100%;
+}
+
+.page-2-bezier-curves,
+.page-3-bezier-surfaces,
+.page-4-b-splines {
+    display: none;
 }
