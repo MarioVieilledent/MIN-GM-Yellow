@@ -96,6 +96,7 @@ body {
 .right-part {
     width: calc(100% - 250px);
     height: 100%;
+    overflow-y: auto;
 }
 
 .bezier-curves-canvas-holder {

@@ -52,9 +52,6 @@ ctx_bezier.canvas.height = height;
 ctx_bezier.fillStyle = BG_CANVAS_COLOR;
 ctx_bezier.fillRect(0, 0, width, height);
 
-// Control point radius
-const controlPointRadius = 20;
-
 // Observer to resize the canvas when window is resized
 function outputsize() {
     width = canvasHolder.offsetWidth - 60;

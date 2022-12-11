@@ -33,46 +33,95 @@ let graphHeight = ProportionOfHeightForGraph * height;
 // Dom input of user input 
 const n_input_selector = document.getElementById('n_input_selector');
 const Ui_input_selector = document.getElementById('Ui_input_selector');
-const Di_input_selector = document.getElementById('Di_input_selector');
+const D_input_selector = document.getElementById('D_input_selector');
 
-// User inputs
+let alreadyInitBSpline = false;
+
+mousePressed_bSplines = -1; // If the mouse is pressed or not, and witch point is pressed
+mousePos_bSplines = [0.0, 0.0]; // Position of mouse for moving points
 
 // Display in the HTML DOM the values for n, ui and di
 n_input_selector.value = '' + n;
 Ui_input_selector.value = Ui.join(', ');
-Di_input_selector.value = Di.join(', ');
+D_input_selector.value = '' + Di.length;
 
 let UiOk = false;
-let DiOk = false;
-
-Ui = format(JSON.stringify(Ui), Ui_input_selector);
-Di = format(JSON.stringify(Di), Di_input_selector);
-drawBSplines();
 
 // Get event on change of these inputs
 n_input_selector.addEventListener('change', event => {
     n = parseInt(event.target.value);
-    Di = format(JSON.stringify(Di), Di_input_selector); // After changing n, check of Di again
     drawBSplines();
 });
 
 Ui_input_selector.addEventListener('change', event => {
     Ui = format(event.target.value, Ui_input_selector);
-    Di = format(JSON.stringify(Di), Di_input_selector); // After changing Ui, check of Di again
-    drawBSplines();
-});
-
-Di_input_selector.addEventListener('change', event => {
-    Di = format(event.target.value, Di_input_selector);
     drawBSplines();
 });
 
 /**
- * Displays the graph and B-spline
+ * Create n randoms D control points
+ */
+function createRandomDi(n) {
+    for (let i = 0; i < n; i++) {
+        Di.push([Math.floor(Math.random() * width), Math.floor(Math.random() * graphHeight)]);
+    }
+}
+
+/**
+ * Function called when user open the page for Bézier curves
+ */
+function initBSplines() {
+    if (!alreadyInitBSpline) {
+        alreadyInitBSpline = true;
+
+        // Create randomly some control points
+        createRandomDi(Ui.length - 1);
+
+        // Ui = format(JSON.stringify(Ui), Ui_input_selector);
+        drawBSplines();
+
+        // let bSpline = DeBoor(6);
+        // console.log(bSpline);
+        // drawPoint(ctx_splines, bSpline[2][0], 6, RED);
+
+
+        // Setup of an infinite loop with delay for animation
+        interval = setInterval(() => {
+            bSplineAnimation();
+            points = [];
+
+            for (let x = -5; x <= 15; x += 0.1) {
+                let bSpline = DeBoor(x);
+                points.push(bSpline[2][0]);
+            }
+            for (let i = 0; i < points.length - 1; i++) {
+                drawLine(ctx_splines, points[i], points[i + 1], RED);
+            }
+        }, delay);
+    }
+}
+
+function bSplineAnimation(t) {
+    ctx_splines.fillStyle = '#444342';
+    ctx_splines.fillRect(0, 0, width, graphHeight - 6);
+
+    // Display control points
+    Di.forEach(d => {
+        drawPoint(ctx_splines, d, controlPointRadius, GREY);
+    });
+
+    // Display lines between control points
+    for (let i = 0; i < Di.length - 1; i++) {
+        drawLine(ctx_splines, Di[i], Di[i + 1], WHITE);
+    }
+}
+
+/**
+ * Displays the graph and B-spline recalculating every steps
  */
 function drawBSplines() {
     // Checks if Ui and Di values are conform
-    if (UiOk && DiOk) {
+    if (true) {
 
         // Calcul once epsilons
         calculEpsilons();
@@ -85,16 +134,6 @@ function drawBSplines() {
 
         // Draws abscissa lines and details
         drawAbscissa();
-
-        // Draws control points
-        for (let i = 0; i < Di.length; i++) {
-            drawPoint(ctx_splines, scalePoint([epsilons[i], Di[i]]), 5, BLUE);
-        }
-
-        // Draws lines between control points
-        for (let i = 0; i < Di.length - 1; i++) {
-            drawLine(ctx_splines, scalePoint([epsilons[i], Di[i]]), scalePoint([epsilons[i + 1], Di[i + 1]]), BLUE);
-        }
     }
 }
 
@@ -146,7 +185,7 @@ function drawAbscissa() {
     // Puts Epsilons values under abscissa
     epsilons.forEach(e => {
         drawTriangle(ctx_splines, [scaleX(e), graphHeight], GREY);
-        drawText(ctx_splines, [scaleX(e) - 4, graphHeight - 18], e + '', 12, WHITE);
+        drawText(ctx_splines, [scaleX(e) - 4, graphHeight + 48], e + '', 12, WHITE);
     });
 }
 
@@ -174,8 +213,6 @@ function scaleY(value) {
 /**
  * Function that checks and parses user input
  * for values of u and d (that I called Ui and Di)
- * 
- * I hope final grade does not take in consideration quality of code...
  * 
  * @param {*} str the string to check and parse
  * @param {*} domElem the dom input elem to update with red color if wrong input
@@ -210,30 +247,65 @@ function format(str, domElem) {
                     UiOk = false;
                     return [];
                 }
-
-
-                // Third check, for Di, check that there's the right amount of values
-            } else if (domElem === Di_input_selector) {
-                if (temp.length > 0 && temp.length === Ui.length - n + 1) {
-                    domElem.style.border = 'none';
-                    DiOk = true;
-                    return temp; // All checks ok
-                } else {
-                    // There's not the right amount of ds
-                    domElem.style.border = '1px solid red';
-                    DiOk = false;
-                    return temp;
-                }
             }
         } else {
             // Not all element of array are numbers
             domElem.style.border = '1px solid red';
-            UiOk = false; DiOk = false;
+            UiOk = false;
             return [];
         }
     } catch (e) { // If user input is not a valid JSON
         domElem.style.border = '1px solid red';
-        UiOk = false; DiOk = false;
+        UiOk = false;
         return [];
     }
+}
+
+/**
+ * Updates the HTML document to display numerical values
+ */
+/*
+function updateDom() {
+    value_t.innerHTML = (bezierCurve.t).toFixed(2);
+
+    value_B00.innerHTML = (`[${bezierCurve.B00[0]}, ${bezierCurve.B00[1]}]`);
+    value_B01.innerHTML = (`[${bezierCurve.B01[0]}, ${bezierCurve.B01[1]}]`);
+    value_B02.innerHTML = (`[${bezierCurve.B02[0]}, ${bezierCurve.B02[1]}]`);
+    value_B03.innerHTML = (`[${bezierCurve.B03[0]}, ${bezierCurve.B03[1]}]`);
+}
+*/
+
+/**
+ * Event listener for mouse (to move the control points around)
+ */
+canvas_splines.addEventListener('mousedown', () => {
+    Di.forEach((d, index) => {
+        if (getDistance(mousePos_bSplines, d) < controlPointRadius) {
+            mousePressed_bSplines = index;
+        }
+    });
+}, false);
+
+canvas_splines.addEventListener('mouseup', () => {
+    mousePressed_bSplines = -1;
+}, false);
+
+/**
+ * When user clicked on a control point:
+ * 1) Modify coordinate of the point moved
+ * 2) Calculate the whole new Bezier curve
+ */
+function manageMouse_bSplines(event) {
+    mousePos_bSplines = getmousePos_bSplines(event);
+    if (mousePressed_bSplines >= 0) {
+        Di[mousePressed_bSplines] = mousePos_bSplines;
+    }
+}
+
+/**
+ * Return mouse position on canvas
+ */
+function getmousePos_bSplines(evt) {
+    var rect = canvas_splines.getBoundingClientRect();
+    return [evt.clientX - rect.left, evt.clientY - rect.top];
 }

@@ -17,9 +17,12 @@ const BLACK = '#666666';
 const GREY = '#777777';
 const WHITE = '#dedede';
 
+// Control point radius
+const controlPointRadius = 20;
+
 // Dimension for canvas
-let width = 800;
-let height = 500;
+let width = 900;
+let height = 600;
 
 /**
  * Draws a point
@@ -69,9 +72,9 @@ function drawArrow(ctx, p1, p2, color) {
 function drawTriangle(ctx, p, color) {
     ctx.strokeStyle = color;
     ctx.moveTo(p[0], p[1]);
-    ctx.lineTo(p[0] + 3, p[1] - 10);
+    ctx.lineTo(p[0] + 3, p[1] + 10);
     ctx.stroke();
-    ctx.lineTo(p[0] - 3, p[1] - 10);
+    ctx.lineTo(p[0] - 3, p[1] + 10);
     ctx.stroke();
     ctx.lineTo(p[0], p[1]);
     ctx.stroke();

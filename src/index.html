@@ -118,16 +118,16 @@ Mario.
                         </div>
                         <div class="block">
                             <div class="property-value">
-                                <span class="property">Di</span>
+                                <span class="property">Control points</span>
                                 <span class="equals">=</span>
-                                <input id="Di_input_selector" class="large-input" type="text">
+                                <input id="D_input_selector" type="number" min="2" max="100" value="2">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="right-part flex-col">
                     <div class="b-splines-canvas-holder" id="b-splines-canvas-holder">
-                        <canvas id="canvas-ex3">
+                        <canvas id="canvas-ex3" onmousemove="manageMouse_bSplines(event)">
                         </canvas>
                     </div>
                 </div>

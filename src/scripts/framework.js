@@ -43,8 +43,10 @@ window.addEventListener('load', function () {
 
 function displayPage(pageId) {
     if (pages[pageId]) {
-        // If page is Bézier curve, initialization of animation
+        // Initialization of Bézier Curve animation
         initBezrierCurves();
+        // Initialization of B Spline animation
+        initBSplines();
         // Hide all pages
         divs.forEach(div => {
             div.style.display = 'none';
