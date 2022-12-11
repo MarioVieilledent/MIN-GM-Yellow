@@ -2,9 +2,12 @@
  * Core script for B-Splines
  */
 
-let n = 2; // n
-let Ui = [-12, -6, -2, -2, 0, 4, 8, 12, 16, 18]; // u values (array of integer)
+let n = 3; // n
+// let Ui = [-12, -6, -2, -2, 0, 4, 8, 12, 16, 18]; // u values (array of integer)
+// let Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+let Ui = [1, 1, 1, 4, 4, 4]
 let Di = []; // d values (array of int, length depend on n and u)
+// [[-6, 0], [-4, 0], [-2, 0], [0, 0], [-8, 0], [0, 0], [8, 0], [4, 0], [2, 0]]
 let epsilons = []; // Epsilons for plotting Di values
 
 /**
@@ -32,13 +35,13 @@ function DeBoor(u) {
     let BSpline = fillBSplineArray(I);
 
     // For k going from 0 to n
-    for (let k = 0; k < n; k++) {
+    for (let k = 1; k <= n; k++) {
         BSpline.push([]);
-        for (let j = 0; j < n - k; j++) {
+        for (let j = 0; j <= n - k; j++) {
             let a = (u - Ui[I - n + k + j]) / (Ui[I + 1 + j] - Ui[I - n + k + j]);
-            BSpline[k + 1].push([
-                (1 - a) * BSpline[k][j][0] + a * BSpline[k][j + 1][0],
-                (1 - a) * BSpline[k][j][1] + a * BSpline[k][j + 1][1]
+            BSpline[k].push([
+                (1 - a) * BSpline[k - 1][j][0] + a * BSpline[k - 1][j + 1][0],
+                (1 - a) * BSpline[k - 1][j][1] + a * BSpline[k - 1][j + 1][1]
             ]);
         }
     }
@@ -66,8 +69,8 @@ function findI(u) {
 
 function fillBSplineArray(I) {
     arr = [[]];
-    for (let i = I - n / 2; i <= I + n / 2; i++) {
-        arr[0].push(Di[i]);
+    for (let i = 0; i <= n; i++) {
+        arr[0].push(Di[i + I - Math.floor(n / 2)]);
     }
     return arr;
 }

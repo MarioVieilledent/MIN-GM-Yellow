@@ -33,7 +33,6 @@ let graphHeight = ProportionOfHeightForGraph * height;
 // Dom input of user input 
 const n_input_selector = document.getElementById('n_input_selector');
 const Ui_input_selector = document.getElementById('Ui_input_selector');
-const D_input_selector = document.getElementById('D_input_selector');
 
 let alreadyInitBSpline = false;
 
@@ -43,9 +42,8 @@ mousePos_bSplines = [0.0, 0.0]; // Position of mouse for moving points
 // Display in the HTML DOM the values for n, ui and di
 n_input_selector.value = '' + n;
 Ui_input_selector.value = Ui.join(', ');
-D_input_selector.value = '' + Di.length;
 
-let UiOk = false;
+let UiOk = true;
 
 // Get event on change of these inputs
 n_input_selector.addEventListener('change', event => {
@@ -61,9 +59,10 @@ Ui_input_selector.addEventListener('change', event => {
 /**
  * Create n randoms D control points
  */
-function createRandomDi(n) {
-    for (let i = 0; i < n; i++) {
-        Di.push([Math.floor(Math.random() * width), Math.floor(Math.random() * graphHeight)]);
+function createRandomDi() {
+    for (let i = 0; i < (Ui.length - n + 1); i++) {
+        console.log(i);
+        Di.push([Math.floor(Math.random() * width), Math.floor(Math.random() * (graphHeight - controlPointRadius - 12))]);
     }
 }
 
@@ -75,44 +74,42 @@ function initBSplines() {
         alreadyInitBSpline = true;
 
         // Create randomly some control points
-        createRandomDi(Ui.length - 1);
+        createRandomDi();
 
         // Ui = format(JSON.stringify(Ui), Ui_input_selector);
         drawBSplines();
 
-        // let bSpline = DeBoor(6);
-        // console.log(bSpline);
-        // drawPoint(ctx_splines, bSpline[2][0], 6, RED);
-
-
         // Setup of an infinite loop with delay for animation
         interval = setInterval(() => {
-            bSplineAnimation();
-            points = [];
+            if (UiOk) {
+                bSplineAnimation();
+                points = [];
 
-            for (let x = -5; x <= 15; x += 0.1) {
-                let bSpline = DeBoor(x);
-                points.push(bSpline[2][0]);
-            }
-            for (let i = 0; i < points.length - 1; i++) {
-                drawLine(ctx_splines, points[i], points[i + 1], RED);
+                for (let x = epsilons[1]; x <= epsilons[epsilons.length - 2]; x += 0.01) {
+                    let bSpline = DeBoor(x);
+                    points.push(bSpline[2][0]);
+                }
+
+                for (let i = 0; i < points.length - 1; i++) {
+                    drawLine(ctx_splines, points[i], points[i + 1], RED);
+                }
             }
         }, delay);
     }
 }
 
-function bSplineAnimation(t) {
+function bSplineAnimation() {
     ctx_splines.fillStyle = '#444342';
     ctx_splines.fillRect(0, 0, width, graphHeight - 6);
 
     // Display control points
     Di.forEach(d => {
-        drawPoint(ctx_splines, d, controlPointRadius, GREY);
+        drawPoint(ctx_splines, d, 12, GREY);
     });
 
     // Display lines between control points
     for (let i = 0; i < Di.length - 1; i++) {
-        drawLine(ctx_splines, Di[i], Di[i + 1], WHITE);
+        drawLine(ctx_splines, Di[i], Di[i + 1], GREY);
     }
 }
 
@@ -121,7 +118,7 @@ function bSplineAnimation(t) {
  */
 function drawBSplines() {
     // Checks if Ui and Di values are conform
-    if (true) {
+    if (UiOk) {
 
         // Calcul once epsilons
         calculEpsilons();
@@ -212,7 +209,6 @@ function scaleY(value) {
 
 /**
  * Function that checks and parses user input
- * for values of u and d (that I called Ui and Di)
  * 
  * @param {*} str the string to check and parse
  * @param {*} domElem the dom input elem to update with red color if wrong input
@@ -262,20 +258,6 @@ function format(str, domElem) {
 }
 
 /**
- * Updates the HTML document to display numerical values
- */
-/*
-function updateDom() {
-    value_t.innerHTML = (bezierCurve.t).toFixed(2);
-
-    value_B00.innerHTML = (`[${bezierCurve.B00[0]}, ${bezierCurve.B00[1]}]`);
-    value_B01.innerHTML = (`[${bezierCurve.B01[0]}, ${bezierCurve.B01[1]}]`);
-    value_B02.innerHTML = (`[${bezierCurve.B02[0]}, ${bezierCurve.B02[1]}]`);
-    value_B03.innerHTML = (`[${bezierCurve.B03[0]}, ${bezierCurve.B03[1]}]`);
-}
-*/
-
-/**
  * Event listener for mouse (to move the control points around)
  */
 canvas_splines.addEventListener('mousedown', () => {
@@ -297,7 +279,7 @@ canvas_splines.addEventListener('mouseup', () => {
  */
 function manageMouse_bSplines(event) {
     mousePos_bSplines = getmousePos_bSplines(event);
-    if (mousePressed_bSplines >= 0) {
+    if (mousePressed_bSplines >= 0 && mousePos_bSplines[1] < graphHeight - controlPointRadius - 12) {
         Di[mousePressed_bSplines] = mousePos_bSplines;
     }
 }
