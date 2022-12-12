@@ -43,14 +43,13 @@ mousePos_bSplines = [0.0, 0.0]; // Position of mouse for moving points
 n_input_selector.value = '' + n;
 Ui_input_selector.value = Ui.join(', ');
 
-let UiOk = true;
+let UiOk = true; // If input is valid, process the calculus
 
 // Get event on change of these inputs
 n_input_selector.addEventListener('change', event => {
     n = parseInt(event.target.value);
     drawBSplines();
 });
-
 Ui_input_selector.addEventListener('change', event => {
     Ui = format(event.target.value, Ui_input_selector);
     drawBSplines();
@@ -60,8 +59,12 @@ Ui_input_selector.addEventListener('change', event => {
  * Create n randoms D control points
  */
 function createRandomDi() {
+    Di = [];
     for (let i = 0; i < (Ui.length - n + 1); i++) {
-        Di.push([Math.floor(Math.random() * width), Math.floor(Math.random() * (graphHeight - controlPointRadius - 12))]);
+        Di.push([
+            scaleX(epsilons[i]),
+            Math.floor(Math.random() * (graphHeight - controlPointRadius - 12))
+        ]);
     }
 }
 
@@ -72,30 +75,21 @@ function initBSplines() {
     if (!alreadyInitBSpline) {
         alreadyInitBSpline = true;
 
-        // Create randomly some control points
-        createRandomDi();
-
         // Ui = format(JSON.stringify(Ui), Ui_input_selector);
         drawBSplines();
 
         // Setup of an infinite loop with delay for animation
         interval = setInterval(() => {
             if (UiOk) {
-                bSplineAnimation();
+                drawBSplineBasics();
                 points = [];
 
-                for (let x = epsilons[1]; x <= epsilons[epsilons.length - 2]; x += 0.01) {
-                    let bSpline = DeBoor(x);
-                    points.push(bSpline[2][0]);
-                }
-
-                epsilons.forEach((e, index) => {
-                    if (index > 0 && index < epsilons.length - 1) {
-
-                        let epsilonPoint = DeBoor(e);
-                        drawPoint(ctx_splines, epsilonPoint[2][0], 6, RED);
+                for (let I = n - 1; I <= Ui.length - n + 1; I++) {
+                    for (let u = I; u < I + 1; u += 0.01) {
+                        let bSpline = DeBoor(u, I - 1);
+                        points.push(bSpline[2][0]);
                     }
-                });
+                }
 
                 for (let i = 0; i < points.length - 1; i++) {
                     drawLine(ctx_splines, points[i], points[i + 1], RED);
@@ -105,7 +99,10 @@ function initBSplines() {
     }
 }
 
-function bSplineAnimation() {
+/**
+ * Clears the canvas, draws control points and connecting lines
+ */
+function drawBSplineBasics() {
     ctx_splines.fillStyle = '#444342';
     ctx_splines.fillRect(0, 0, width, graphHeight - 6);
 
@@ -122,16 +119,19 @@ function bSplineAnimation() {
 
 /**
  * Displays the graph and B-spline recalculating every steps
+ * Works as an update when user change some input
  */
 function drawBSplines() {
     // Checks if Ui and Di values are conform
     if (UiOk) {
-
-        // Calcul once epsilons
+        // Calculates once epsilons
         calculEpsilons();
 
         // Calculates scales transformations
         plotGraph();
+
+        // Create randomly some control points
+        createRandomDi();
 
         // Resets canvas
         resetSplineCanvas();
@@ -142,7 +142,12 @@ function drawBSplines() {
 }
 
 /**
- * Plot graph depending on given values
+ * Get linear transformation values to switch between two coordinate systems
+ * 
+ * 1) Coordinate of the canvas (used by control points)
+ * 2) Coordinate deduced by the min and max of Uis and Dis values
+ * 
+ * Caution, the wheel has been reinvented here
  */
 function plotGraph() {
     xRange = Ui[Ui.length - 1] - Ui[0];
@@ -166,7 +171,8 @@ function resetSplineCanvas() {
 }
 
 /**
- * Draws abscissa and its details
+ * Draws abscissa horizontal line,
+ * puts Uis values and epsilons triangles
  */
 function drawAbscissa() {
     // Draws abscissa
@@ -215,7 +221,10 @@ function scaleY(value) {
 }
 
 /**
- * Function that checks and parses user input
+ * Function that checks and parses user input for Uis
+ * 
+ * Uis should be in JSON format of a list, or a list without without brackets
+ * Uis should have increasing or equals values
  * 
  * @param {*} str the string to check and parse
  * @param {*} domElem the dom input elem to update with red color if wrong input
