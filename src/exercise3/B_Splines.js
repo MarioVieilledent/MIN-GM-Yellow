@@ -2,10 +2,10 @@
  * Core script for B-Splines
  */
 
-let n = 3; // n
+let n = 2; // n
 // let Ui = [-12, -6, -2, -2, 0, 4, 8, 12, 16, 18]; // u values (array of integer)
-// let Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-let Ui = [1, 1, 1, 4, 4, 4]
+let Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+// let Ui = [1, 1, 1, 4, 4, 4]
 let Di = []; // d values (array of int, length depend on n and u)
 // [[-6, 0], [-4, 0], [-2, 0], [0, 0], [-8, 0], [0, 0], [8, 0], [4, 0], [2, 0]]
 let epsilons = []; // Epsilons for plotting Di values
@@ -33,6 +33,11 @@ function calculEpsilons() {
 function DeBoor(u) {
     let I = findI(u);
     let BSpline = fillBSplineArray(I);
+
+    // console.log(u)
+    // console.log(I)
+    // console.log(BSpline)
+    // console.log('---')
 
     // For k going from 0 to n
     for (let k = 1; k <= n; k++) {

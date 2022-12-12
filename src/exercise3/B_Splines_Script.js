@@ -61,7 +61,6 @@ Ui_input_selector.addEventListener('change', event => {
  */
 function createRandomDi() {
     for (let i = 0; i < (Ui.length - n + 1); i++) {
-        console.log(i);
         Di.push([Math.floor(Math.random() * width), Math.floor(Math.random() * (graphHeight - controlPointRadius - 12))]);
     }
 }
@@ -89,6 +88,14 @@ function initBSplines() {
                     let bSpline = DeBoor(x);
                     points.push(bSpline[2][0]);
                 }
+
+                epsilons.forEach((e, index) => {
+                    if (index > 0 && index < epsilons.length - 1) {
+
+                        let epsilonPoint = DeBoor(e);
+                        drawPoint(ctx_splines, epsilonPoint[2][0], 6, RED);
+                    }
+                });
 
                 for (let i = 0; i < points.length - 1; i++) {
                     drawLine(ctx_splines, points[i], points[i + 1], RED);
