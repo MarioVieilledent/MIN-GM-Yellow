@@ -82,14 +82,7 @@ function initBSplines() {
         interval = setInterval(() => {
             if (UiOk) {
                 drawBSplineBasics();
-                points = [];
-
-                for (let I = n - 1; I <= Ui.length - n + 1; I++) {
-                    for (let u = I; u < I + 1; u += 0.01) {
-                        let bSpline = DeBoor(u, I - 1);
-                        points.push(bSpline[2][0]);
-                    }
-                }
+                points = calculateDeBoor();
 
                 for (let i = 0; i < points.length - 1; i++) {
                     drawLine(ctx_splines, points[i], points[i + 1], RED);

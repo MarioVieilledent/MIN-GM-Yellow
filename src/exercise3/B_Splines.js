@@ -28,6 +28,21 @@ function calculEpsilons() {
 }
 
 /**
+ * Divide B-Spline into segments and use the DeBoor algorithm for each
+ * @returns list of points of the B-Spline
+ */
+function calculateDeBoor() {
+    let points = [];
+    for (let I = n - 1; I <= Ui.length - n + 1; I++) {
+        for (let u = I; u < I + 1; u += 0.01) {
+            let bSpline = DeBoor(u, I - 1);
+            points.push(bSpline[2][0]);
+        }
+    }
+    return points;
+}
+
+/**
  * De Boor's algorithm implementation
  * 
  * @param {*} u 
@@ -42,10 +57,11 @@ function DeBoor(u, I) {
         BSpline.push([]);
         for (let j = 0; j <= n - k; j++) {
             let a = (u - Ui[I - n + k + j]) / (Ui[I + 1 + j] - Ui[I - n + k + j]);
-            BSpline[k].push([
-                (1 - a) * BSpline[k - 1][j][0] + a * BSpline[k - 1][j + 1][0],
-                (1 - a) * BSpline[k - 1][j][1] + a * BSpline[k - 1][j + 1][1]
-            ]);
+            let tempArr = [];
+            for (let dim = 0; dim < BSpline[0].length; dim++) {
+                tempArr.push((1 - a) * BSpline[k - 1][j][dim] + a * BSpline[k - 1][j + 1][dim]);
+            }
+            BSpline[k].push(tempArr);
         }
     }
 
