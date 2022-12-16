@@ -5,6 +5,21 @@
  * with color in the canvas context.
  */
 
+// Local Storage (save Ui, Di, and n values)
+const localStorageUI = 'localStorageUI';
+// const localStorageDI = 'localStorageDI';
+const localStorageN = 'localStorageN';
+
+// n value (stored in localStorage)
+let n = 2;
+let nSaved = window.localStorage.getItem(localStorageN);
+nSaved ? n = parseInt(nSaved) : {};
+
+// Ui values (stored in localStorage)
+let Ui = [];
+let UiSaved = window.localStorage.getItem(localStorageUI);
+UiSaved ? Ui = JSON.parse(UiSaved) : Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 // Canvas and context to draw graphics in web page
 let canvas_splines_holder = document.getElementById('bezier-curves-canvas-holder');
 let canvas_splines = document.getElementById('canvas-ex3');
@@ -39,19 +54,18 @@ let alreadyInitBSpline = false;
 mousePressed_bSplines = -1; // If the mouse is pressed or not, and witch point is pressed
 mousePos_bSplines = [0.0, 0.0]; // Position of mouse for moving points
 
-// Display in the HTML DOM the values for n, ui and di
-n_input_selector.value = '' + n;
-Ui_input_selector.value = Ui.join(', ');
-
 let UiOk = true; // If input is valid, process the calculus
 
 // Get event on change of these inputs
 n_input_selector.addEventListener('change', event => {
     n = parseInt(event.target.value);
+    window.localStorage.setItem(localStorageN, JSON.stringify(n));
     drawBSplines();
 });
+
 Ui_input_selector.addEventListener('change', event => {
     Ui = format(event.target.value, Ui_input_selector);
+    window.localStorage.setItem(localStorageUI, JSON.stringify(Ui));
     drawBSplines();
 });
 
@@ -74,6 +88,10 @@ function createRandomDi() {
 function initBSplines() {
     if (!alreadyInitBSpline) {
         alreadyInitBSpline = true;
+
+        // Display in the HTML DOM the values for n, ui and di
+        n_input_selector.value = '' + n;
+        Ui_input_selector.value = Ui.join(', ');
 
         // Ui = format(JSON.stringify(Ui), Ui_input_selector);
         drawBSplines();
@@ -188,7 +206,7 @@ function drawAbscissa() {
     // Puts Epsilons values under abscissa
     epsilons.forEach(e => {
         drawTriangle(ctx_splines, [scaleX(e), graphHeight], GREY);
-        drawText(ctx_splines, [scaleX(e) - 4, graphHeight + 48], e + '', 12, WHITE);
+        drawText(ctx_splines, [scaleX(e) - 4, graphHeight + 48], e.toFixed(1) + '', 12, WHITE);
     });
 }
 

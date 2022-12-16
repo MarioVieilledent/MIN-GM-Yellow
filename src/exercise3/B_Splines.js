@@ -2,12 +2,7 @@
  * Core script for B-Splines
  */
 
-let n = 2; // n
 
-// u values (array of integer)
-let Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-// let Ui = [-12, -6, -2, -2, 0, 4, 8, 12, 16, 18];
-// let Ui = [1, 1, 1, 4, 4, 4]
 
 let Di = []; // d values (array of int, length depend on n and u)
 
@@ -33,29 +28,33 @@ function calculEpsilons() {
  */
 function calculateDeBoor() {
     let points = [];
-    for (let I = n - 1; I <= Ui.length - n + 1; I++) {
-        for (let u = I; u < I + 1; u += 0.01) {
-            let bSpline = DeBoor(u, I - 1);
-            points.push(bSpline[2][0]);
+    let K = Ui.length - 1;
+
+    for (let I = n - 1; I <= K - n; I++) { // Segmentation in I
+        let uMin = Ui[I];
+        let uMax = Ui[I + 1];
+        let step = (uMax - uMin) / 100 // Divide segment into 100 points
+        for (let u = uMin; u < uMax; u += step) {
+            let bSpline = DeBoor(u, I); // Calculate point with De Boor algorithm
+            points.push(bSpline[n][0]); // Save result, the last point in the De Boor algorithm
         }
     }
+
     return points;
 }
 
 /**
  * De Boor's algorithm implementation
  * 
- * @param {*} u 
  * @returns a list of k lists of j points
  */
 function DeBoor(u, I) {
-    // let I = findI(u);
     let BSpline = fillBSplineArray(I);
 
-    // For k going from 0 to n
-    for (let k = 1; k <= n; k++) {
+    for (let k = 1; k <= n; k++) { // For k going from 1 to n
         BSpline.push([]);
         for (let j = 0; j <= n - k; j++) {
+            // Calculation of a
             let a = (u - Ui[I - n + k + j]) / (Ui[I + 1 + j] - Ui[I - n + k + j]);
             let tempArr = [];
             for (let dim = 0; dim < BSpline[0].length; dim++) {
@@ -69,35 +68,12 @@ function DeBoor(u, I) {
 }
 
 /**
- * Find the value of I given an u
- * Find it being the closest calculated epsilon to the u
+ * Fill a new array with d00, d01, d02, etc.
  */
-function findI(u) {
-    if (epsilons?.length > 0) {
-        let I = 0;
-        epsilons.forEach((e, index) => {
-            if (Math.abs((u - e)) < Math.abs((u - epsilons[I]))) {
-                I = index;
-            }
-        });
-        return I;
-    } else {
-        return 0;
-    }
-}
-
 function fillBSplineArray(I) {
     arr = [[]];
-    for (let i = 0; i <= n; i++) {
-        let d = Di[I + i - Math.floor(n / 2)];
-        if (!d) {
-            if (I < 1) {
-                d = Di[0];
-            } else {
-                d = Di[Di.length - 1];
-            }
-        }
-        arr[0].push(d);
+    for (let j = 0; j <= n; j++) {
+        arr[0].push(Di[I - n + 1 + j]);
     }
     return arr;
 }
