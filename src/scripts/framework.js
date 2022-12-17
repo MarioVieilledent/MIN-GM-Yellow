@@ -11,21 +11,24 @@ let buttons = [
     document.getElementById('nav-button-page-1-introduction'),
     document.getElementById('nav-button-page-2-bezier-curves'),
     document.getElementById('nav-button-page-3-bezier-surfaces'),
-    document.getElementById('nav-button-page-4-b-splines')
+    document.getElementById('nav-button-page-4-b-splines'),
+    document.getElementById('nav-button-page-5-nurbs')
 ]
 
 let pages = [
     'page-1-introduction',
     'page-2-bezier-curves',
     'page-3-bezier-surfaces',
-    'page-4-b-splines'
+    'page-4-b-splines',
+    'page-5-nurbs'
 ];
 
 let divs = [
     document.getElementById(pages[0]),
     document.getElementById(pages[1]),
     document.getElementById(pages[2]),
-    document.getElementById(pages[3])
+    document.getElementById(pages[3]),
+    document.getElementById(pages[4])
 ];
 
 /**
@@ -45,8 +48,13 @@ function displayPage(pageId) {
     if (pages[pageId]) {
         // Initialization of Bézier Curve animation
         initBezrierCurves();
+
         // Initialization of B Spline animation
         initBSplines();
+
+        // Initialization of NURBS
+        initNurbs();
+
         // Hide all pages
         divs.forEach(div => {
             div.style.display = 'none';

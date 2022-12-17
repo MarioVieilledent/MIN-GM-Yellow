@@ -43,6 +43,9 @@ Mario.
                 <div class="nav-button" id="nav-button-page-4-b-splines" onclick="displayPage(3)">
                     4. B-Spline
                 </div>
+                <div class="nav-button" id="nav-button-page-5-nurbs" onclick="displayPage(4)">
+                    5. NURBS
+                </div>
             </div>
             <div class="right flex">
                 <!-- <img class="header-img" src="assets/sun-solid.svg" alt="Sun logo to toggle dark theme"> -->
@@ -125,12 +128,23 @@ Mario.
                     </div>
                 </div>
             </div>
+            <div class="page-5-nurbs" id="page-5-nurbs">
+                <div class="left-part flex-col">
+                </div>
+                <div class="right-part flex-col">
+                    <div class="nurbs-canvas-holder" id="nurbs-canvas-holder">
+                        <canvas id="canvas-ex4" onmousemove="manageMouse_nurbs(event)">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Scripts for exercises -->
     <script src="./exercise1/Bezier_Curves.js"></script>
     <script src="./exercise2/dist/out.js"></script>
     <script src="./exercise3/B_Splines.js"></script>
+    <script src="./exercise4/NURBS.js"></script>
 
     <!-- Tests -->
     <script src="./exercise1/Bezier_Curves_Test.js"></script>
@@ -140,6 +154,7 @@ Mario.
     <script src="./scripts/canvasDrawer.js"></script>
     <script src="./exercise1/Bezier_Curves_Script.js"></script>
     <script src="./exercise3/B_Splines_Script.js"></script>
+    <script src="./exercise4/NURBS_Script.js"></script>
 </body>
 
 </html>

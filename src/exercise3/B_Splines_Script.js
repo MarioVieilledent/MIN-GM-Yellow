@@ -21,7 +21,7 @@ let UiSaved = window.localStorage.getItem(localStorageUI);
 UiSaved ? Ui = JSON.parse(UiSaved) : Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // Canvas and context to draw graphics in web page
-let canvas_splines_holder = document.getElementById('bezier-curves-canvas-holder');
+let canvas_splines_holder = document.getElementById('b-splines-canvas-holder');
 let canvas_splines = document.getElementById('canvas-ex3');
 let ctx_splines = canvas_splines.getContext('2d');
 ctx_splines.canvas.width = width;
