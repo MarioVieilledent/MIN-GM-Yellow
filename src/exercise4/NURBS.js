@@ -2,7 +2,7 @@
  * Main script for NURBS exercise
  */
 
-class NURB {
+class NURBS {
     n;
     w;
     b;
@@ -27,21 +27,5 @@ class NURB {
             }
         }
         return bt;
-    }
-}
-
-function initNurbs() {
-
-
-    let nurb = new NURB();
-
-    nurb.n = 3;
-    nurb.w = [2, 1, 1, 2];
-    nurb.b = [[100, 100], [200, 600], [700, 300], [400, 300]];
-
-    nurb.rationalerDeCasteljau(0.5);
-
-    for (let t = 0.0; t <= 1; t += 0.01) {
-        drawPoint(ctx_nurbs, nurb.rationalerDeCasteljau(t)[3][0], 4, RED);
     }
 }

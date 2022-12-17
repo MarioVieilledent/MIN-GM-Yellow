@@ -270,16 +270,28 @@ function format(str, domElem) {
                     UiOk = false;
                     return [];
                 }
+            } else if (domElem === Wi_input_selector) {
+                domElem.style.border = 'none';
+                WiOk = true;
+                return temp;
             }
         } else {
             // Not all element of array are numbers
             domElem.style.border = '1px solid red';
-            UiOk = false;
+            if (domElem !== Wi_input_selector) {
+                UiOk = false;
+            } else {
+                WiOk = false;
+            }
             return [];
         }
     } catch (e) { // If user input is not a valid JSON
         domElem.style.border = '1px solid red';
-        UiOk = false;
+        if (domElem !== Wi_input_selector) {
+            UiOk = false;
+        } else {
+            WiOk = false;
+        }
         return [];
     }
 }
@@ -315,6 +327,6 @@ function manageMouse_bSplines(event) {
  * Return mouse position on canvas
  */
 function getmousePos_bSplines(evt) {
-    var rect = canvas_splines.getBoundingClientRect();
+    let rect = canvas_splines.getBoundingClientRect();
     return [evt.clientX - rect.left, evt.clientY - rect.top];
 }
