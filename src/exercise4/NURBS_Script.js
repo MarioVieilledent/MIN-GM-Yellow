@@ -17,9 +17,13 @@ const localStorageWi = 'localStorageWi';
 
 let WiOk = true;
 
+// When user change weights
 Wi_input_selector.addEventListener('change', event => {
+    setUpNurbs();
+    // Check if input is valid and change weights
     nurbs.w = format(event.target.value, Wi_input_selector);
     window.localStorage.setItem(localStorageWi, JSON.stringify(nurbs.w));
+    setUpNurbs();
 });
 
 // Canvas and context to draw graphics in web page
@@ -39,12 +43,13 @@ function initNurbs() {
     nurbs = new NURBS();
 
     // Get saved values in localStorage
-
     nurbs.n = 3;
     nurbs.w = getWeightsLocalStorage();
-    nurbs.b = [[100, 100], [200, 600], [700, 300], [400, 300]];
-
+    nurbs.b = [[100, 100], [400, 300], [150, 400], [200, 300]];
     Wi_input_selector.value = nurbs.w;
+
+    // Set n and control points
+    setUpNurbs();
 
     nurbs.rationalerDeCasteljau(0.5);
 
@@ -61,13 +66,33 @@ function initNurbs() {
             drawPoint(ctx_nurbs, controlPoint, 12, GREY);
         });
 
+        // Draws control polygon
+        for (let i = 0; i < nurbs.n; i++) {
+            drawLine(ctx_nurbs, nurbs.b[i], nurbs.b[i + 1], WHITE);
+        }
+
         // Draw the NURBS
         if (UiOk) {
             for (let t = 0.0; t < 1; t += step) {
-                drawLine(ctx_nurbs, nurbs.rationalerDeCasteljau(t)[3][0], nurbs.rationalerDeCasteljau(t + step)[3][0], RED);
+                drawLine(ctx_nurbs, nurbs.rationalerDeCasteljau(t)[nurbs.n][0], nurbs.rationalerDeCasteljau(t + step)[nurbs.n][0], RED);
             }
         }
     }, delay);
+}
+
+/**
+ * Knowing the weights, sets up n value and d control points 
+ */
+function setUpNurbs() {
+    // Change n so it's the number of weights
+    nurbs.n = nurbs.w.length - 1;
+    // Add or remove control points if needed
+    while (nurbs.b.length > nurbs.n + 1) {
+        nurbs.b.pop();
+    }
+    while (nurbs.b.length < nurbs.n + 1) {
+        nurbs.b.push([Math.floor(Math.random() * width), Math.floor(Math.random() * height)]);
+    }
 }
 
 function getWeightsLocalStorage() {
