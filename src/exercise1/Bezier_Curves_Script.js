@@ -84,6 +84,11 @@ function drawBasicsBezier() {
     drawPoint(ctx_bezier, bezierCurve.B02, controlPointRadius * Math.abs(bezierCurve.Bpol32(bezierCurve.t)), WHITE);
     drawPoint(ctx_bezier, bezierCurve.B03, controlPointRadius * Math.abs(bezierCurve.Bpol33(bezierCurve.t)), WHITE);
 
+    // Write Bernstein polynomial value for each control point
+    drawText(ctx_bezier, [bezierCurve.B00[0] - 13, bezierCurve.B00[1] - 24], bezierCurve.Bpol30(bezierCurve.t).toFixed(2), 14, WHITE);
+    drawText(ctx_bezier, [bezierCurve.B01[0] - 13, bezierCurve.B01[1] - 24], bezierCurve.Bpol31(bezierCurve.t).toFixed(2), 14, WHITE);
+    drawText(ctx_bezier, [bezierCurve.B02[0] - 13, bezierCurve.B02[1] - 24], bezierCurve.Bpol32(bezierCurve.t).toFixed(2), 14, WHITE);
+    drawText(ctx_bezier, [bezierCurve.B03[0] - 13, bezierCurve.B03[1] - 24], bezierCurve.Bpol33(bezierCurve.t).toFixed(2), 14, WHITE);
 
     // Draw of 3 lines
     drawLine(ctx_bezier, bezierCurve.B00, bezierCurve.B01, WHITE);

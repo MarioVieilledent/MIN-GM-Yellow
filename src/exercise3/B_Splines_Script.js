@@ -20,6 +20,11 @@ let Ui = [];
 let UiSaved = window.localStorage.getItem(localStorageUI);
 UiSaved ? Ui = JSON.parse(UiSaved) : Ui = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+// Animation
+let uIndex = 0; // Index for parameter u for animation
+let reverseBSpline = false; // Animation going in two directions
+let BSplineStep = 0.1; // Step between each frame
+
 // Canvas and context to draw graphics in web page
 let canvas_splines_holder = document.getElementById('b-splines-canvas-holder');
 let canvas_splines = document.getElementById('canvas-ex3');
@@ -96,15 +101,39 @@ function initBSplines() {
         // Ui = format(JSON.stringify(Ui), Ui_input_selector);
         drawBSplines();
 
-        // Setup of an infinite loop with delay for animation
+        // Setup of an infinite loop for recalculating BSpline and display animation
         interval = setInterval(() => {
             if (UiOk) {
+                // Clears the canvas, draws control points and connecting lines
                 drawBSplineBasics();
-                points = calculateDeBoor();
 
-                for (let i = 0; i < points.length - 1; i++) {
-                    drawLine(ctx_splines, points[i], points[i + 1], RED);
+                // Calculates and store all points of the B-Spline
+                const db = calculateDeBoor();
+
+                // Draws the B-Spline with all points
+                for (let i = 0; i < db.cp.length - 1; i++) {
+                    drawLine(ctx_splines, db.cp[i][n][0], db.cp[i + 1][n][0], RED);
                 }
+
+                // Draws moving point with its value
+                drawPoint(ctx_splines, db.cp[uIndex][n][0], 6, RED);
+                drawText(ctx_splines, [db.cp[uIndex][n][0][0] - 15, db.cp[uIndex][n][0][1] - 12], `u=${db.uv[uIndex].toFixed(2)}`, 12, WHITE);
+
+                // Draws the tangent vector
+                if (reverseBSpline) {
+                    drawArrow(ctx_splines, db.cp[uIndex][n][0],
+                        [db.cp[uIndex][n][0][0] - db.tv[uIndex][0], db.cp[uIndex][n][0][1] - db.tv[uIndex][1]],
+                        YELLOW);
+                } else {
+                    drawArrow(ctx_splines, db.cp[uIndex][n][0],
+                        [db.cp[uIndex][n][0][0] + db.tv[uIndex][0], db.cp[uIndex][n][0][1] + db.tv[uIndex][1]],
+                        YELLOW);
+                }
+
+
+                // Increment or decrement uIndex for animation
+                !reverseBSpline && uIndex < db.tv.length - 1 ? uIndex++ : reverseBSpline = true;
+                reverseBSpline && uIndex > 0 ? uIndex-- : reverseBSpline = false;
             }
         }, delay);
     }
@@ -182,8 +211,8 @@ function resetSplineCanvas() {
 }
 
 /**
- * Draws abscissa horizontal line,
- * puts Uis values and epsilons triangles
+ * Draws abscissa horizontal line under the spline,
+ * puts Uis values and epsilons as triangles
  */
 function drawAbscissa() {
     // Draws abscissa

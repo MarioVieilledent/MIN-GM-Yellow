@@ -2,11 +2,10 @@
  * Core script for B-Splines
  */
 
-
-
 let Di = []; // d values (array of int, length depend on n and u)
-
 let epsilons = []; // Epsilons for plotting Di values
+
+const numberOfSegments = 500; // Number of segments to build the curve and for animation
 
 /**
  * Knowing n and Ui values, calculates epsilons with Greville-Abszissen formula 
@@ -24,23 +23,33 @@ function calculEpsilons() {
 
 /**
  * Divide B-Spline into segments and use the DeBoor algorithm for each
+ * Calculates and return all points and their tangentVectors for the whole B-Spline
  * @returns list of points of the B-Spline
  */
 function calculateDeBoor() {
-    let points = [];
+    let cp = []; // Control points
+    let tv = []; // Tangent vectors
+    let uv = []; // Store values of u (in order to know the u value and not the index in arrays)
     let K = Ui.length - 1;
 
     for (let I = n - 1; I <= K - n; I++) { // Segmentation in I
         let uMin = Ui[I];
         let uMax = Ui[I + 1];
-        let step = (uMax - uMin) / 100 // Divide segment into 100 points
+        let step = (uMax - uMin) / numberOfSegments // Divide segment into numberOfSegments points
         for (let u = uMin; u < uMax; u += step) {
             let bSpline = DeBoor(u, I); // Calculate point with De Boor algorithm
-            points.push(bSpline[n][0]); // Save result, the last point in the De Boor algorithm
+            cp.push(bSpline); // Save result, the last point in the De Boor algorithm
+            uv.push(u);
         }
+
     }
 
-    return points;
+    // Tangent vector, substraction of two points in layer n-1
+    for (let i = 0; i < cp.length; i++) {
+        tv.push([cp[i][n - 1][1][0] - cp[i][n - 1][0][0], cp[i][n - 1][1][1] - cp[i][n - 1][0][1]]);
+    }
+
+    return { cp, tv, uv };
 }
 
 /**
