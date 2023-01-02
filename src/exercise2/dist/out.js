@@ -17071,6 +17071,128 @@
       return this;
     }
   };
+  var CylinderGeometry = class extends BufferGeometry {
+    constructor(radiusTop = 1, radiusBottom = 1, height = 1, radialSegments = 8, heightSegments = 1, openEnded = false, thetaStart = 0, thetaLength = Math.PI * 2) {
+      super();
+      this.type = "CylinderGeometry";
+      this.parameters = {
+        radiusTop,
+        radiusBottom,
+        height,
+        radialSegments,
+        heightSegments,
+        openEnded,
+        thetaStart,
+        thetaLength
+      };
+      const scope = this;
+      radialSegments = Math.floor(radialSegments);
+      heightSegments = Math.floor(heightSegments);
+      const indices = [];
+      const vertices = [];
+      const normals = [];
+      const uvs = [];
+      let index = 0;
+      const indexArray = [];
+      const halfHeight = height / 2;
+      let groupStart = 0;
+      generateTorso();
+      if (openEnded === false) {
+        if (radiusTop > 0)
+          generateCap(true);
+        if (radiusBottom > 0)
+          generateCap(false);
+      }
+      this.setIndex(indices);
+      this.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+      this.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+      this.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+      function generateTorso() {
+        const normal = new Vector3();
+        const vertex2 = new Vector3();
+        let groupCount = 0;
+        const slope = (radiusBottom - radiusTop) / height;
+        for (let y = 0; y <= heightSegments; y++) {
+          const indexRow = [];
+          const v = y / heightSegments;
+          const radius = v * (radiusBottom - radiusTop) + radiusTop;
+          for (let x = 0; x <= radialSegments; x++) {
+            const u = x / radialSegments;
+            const theta = u * thetaLength + thetaStart;
+            const sinTheta = Math.sin(theta);
+            const cosTheta = Math.cos(theta);
+            vertex2.x = radius * sinTheta;
+            vertex2.y = -v * height + halfHeight;
+            vertex2.z = radius * cosTheta;
+            vertices.push(vertex2.x, vertex2.y, vertex2.z);
+            normal.set(sinTheta, slope, cosTheta).normalize();
+            normals.push(normal.x, normal.y, normal.z);
+            uvs.push(u, 1 - v);
+            indexRow.push(index++);
+          }
+          indexArray.push(indexRow);
+        }
+        for (let x = 0; x < radialSegments; x++) {
+          for (let y = 0; y < heightSegments; y++) {
+            const a = indexArray[y][x];
+            const b = indexArray[y + 1][x];
+            const c = indexArray[y + 1][x + 1];
+            const d = indexArray[y][x + 1];
+            indices.push(a, b, d);
+            indices.push(b, c, d);
+            groupCount += 6;
+          }
+        }
+        scope.addGroup(groupStart, groupCount, 0);
+        groupStart += groupCount;
+      }
+      function generateCap(top) {
+        const centerIndexStart = index;
+        const uv = new Vector2();
+        const vertex2 = new Vector3();
+        let groupCount = 0;
+        const radius = top === true ? radiusTop : radiusBottom;
+        const sign = top === true ? 1 : -1;
+        for (let x = 1; x <= radialSegments; x++) {
+          vertices.push(0, halfHeight * sign, 0);
+          normals.push(0, sign, 0);
+          uvs.push(0.5, 0.5);
+          index++;
+        }
+        const centerIndexEnd = index;
+        for (let x = 0; x <= radialSegments; x++) {
+          const u = x / radialSegments;
+          const theta = u * thetaLength + thetaStart;
+          const cosTheta = Math.cos(theta);
+          const sinTheta = Math.sin(theta);
+          vertex2.x = radius * sinTheta;
+          vertex2.y = halfHeight * sign;
+          vertex2.z = radius * cosTheta;
+          vertices.push(vertex2.x, vertex2.y, vertex2.z);
+          normals.push(0, sign, 0);
+          uv.x = cosTheta * 0.5 + 0.5;
+          uv.y = sinTheta * 0.5 * sign + 0.5;
+          uvs.push(uv.x, uv.y);
+          index++;
+        }
+        for (let x = 0; x < radialSegments; x++) {
+          const c = centerIndexStart + x;
+          const i = centerIndexEnd + x;
+          if (top === true) {
+            indices.push(i, i + 1, c);
+          } else {
+            indices.push(i + 1, i, c);
+          }
+          groupCount += 3;
+        }
+        scope.addGroup(groupStart, groupCount, top === true ? 1 : 2);
+        groupStart += groupCount;
+      }
+    }
+    static fromJSON(data) {
+      return new CylinderGeometry(data.radiusTop, data.radiusBottom, data.height, data.radialSegments, data.heightSegments, data.openEnded, data.thetaStart, data.thetaLength);
+    }
+  };
   var SphereGeometry = class extends BufferGeometry {
     constructor(radius = 1, widthSegments = 32, heightSegments = 16, phiStart = 0, phiLength = Math.PI * 2, thetaStart = 0, thetaLength = Math.PI) {
       super();
@@ -18032,6 +18154,64 @@
     ]
   ];
   var _controlInterpolantsResultBuffer = new Float32Array(1);
+  var Raycaster = class {
+    constructor(origin, direction, near = 0, far = Infinity) {
+      this.ray = new Ray(origin, direction);
+      this.near = near;
+      this.far = far;
+      this.camera = null;
+      this.layers = new Layers();
+      this.params = {
+        Mesh: {},
+        Line: { threshold: 1 },
+        LOD: {},
+        Points: { threshold: 1 },
+        Sprite: {}
+      };
+    }
+    set(origin, direction) {
+      this.ray.set(origin, direction);
+    }
+    setFromCamera(coords, camera) {
+      if (camera.isPerspectiveCamera) {
+        this.ray.origin.setFromMatrixPosition(camera.matrixWorld);
+        this.ray.direction.set(coords.x, coords.y, 0.5).unproject(camera).sub(this.ray.origin).normalize();
+        this.camera = camera;
+      } else if (camera.isOrthographicCamera) {
+        this.ray.origin.set(coords.x, coords.y, (camera.near + camera.far) / (camera.near - camera.far)).unproject(camera);
+        this.ray.direction.set(0, 0, -1).transformDirection(camera.matrixWorld);
+        this.camera = camera;
+      } else {
+        console.error("THREE.Raycaster: Unsupported camera type: " + camera.type);
+      }
+    }
+    intersectObject(object, recursive = true, intersects = []) {
+      intersectObject(object, this, intersects, recursive);
+      intersects.sort(ascSort);
+      return intersects;
+    }
+    intersectObjects(objects, recursive = true, intersects = []) {
+      for (let i = 0, l = objects.length; i < l; i++) {
+        intersectObject(objects[i], this, intersects, recursive);
+      }
+      intersects.sort(ascSort);
+      return intersects;
+    }
+  };
+  function ascSort(a, b) {
+    return a.distance - b.distance;
+  }
+  function intersectObject(object, raycaster, intersects, recursive) {
+    if (object.layers.test(raycaster.layers)) {
+      object.raycast(raycaster, intersects);
+    }
+    if (recursive === true) {
+      const children = object.children;
+      for (let i = 0, l = children.length; i < l; i++) {
+        intersectObject(children[i], raycaster, intersects, true);
+      }
+    }
+  }
   var Spherical = class {
     constructor(radius = 1, phi = 0, theta = 0) {
       this.radius = radius;
@@ -18074,6 +18254,64 @@
       return new this.constructor().copy(this);
     }
   };
+  var _axis = /* @__PURE__ */ new Vector3();
+  var _lineGeometry;
+  var _coneGeometry;
+  var ArrowHelper = class extends Object3D {
+    constructor(dir = new Vector3(0, 0, 1), origin = new Vector3(0, 0, 0), length = 1, color = 16776960, headLength = length * 0.2, headWidth = headLength * 0.2) {
+      super();
+      this.type = "ArrowHelper";
+      if (_lineGeometry === void 0) {
+        _lineGeometry = new BufferGeometry();
+        _lineGeometry.setAttribute("position", new Float32BufferAttribute([0, 0, 0, 0, 1, 0], 3));
+        _coneGeometry = new CylinderGeometry(0, 0.5, 1, 5, 1);
+        _coneGeometry.translate(0, -0.5, 0);
+      }
+      this.position.copy(origin);
+      this.line = new Line(_lineGeometry, new LineBasicMaterial({ color, toneMapped: false }));
+      this.line.matrixAutoUpdate = false;
+      this.add(this.line);
+      this.cone = new Mesh(_coneGeometry, new MeshBasicMaterial({ color, toneMapped: false }));
+      this.cone.matrixAutoUpdate = false;
+      this.add(this.cone);
+      this.setDirection(dir);
+      this.setLength(length, headLength, headWidth);
+    }
+    setDirection(dir) {
+      if (dir.y > 0.99999) {
+        this.quaternion.set(0, 0, 0, 1);
+      } else if (dir.y < -0.99999) {
+        this.quaternion.set(1, 0, 0, 0);
+      } else {
+        _axis.set(dir.z, 0, -dir.x).normalize();
+        const radians = Math.acos(dir.y);
+        this.quaternion.setFromAxisAngle(_axis, radians);
+      }
+    }
+    setLength(length, headLength = length * 0.2, headWidth = headLength * 0.2) {
+      this.line.scale.set(1, Math.max(1e-4, length - headLength), 1);
+      this.line.updateMatrix();
+      this.cone.scale.set(headWidth, headLength, headWidth);
+      this.cone.position.y = length;
+      this.cone.updateMatrix();
+    }
+    setColor(color) {
+      this.line.material.color.set(color);
+      this.cone.material.color.set(color);
+    }
+    copy(source) {
+      super.copy(source, false);
+      this.line.copy(source.line);
+      this.cone.copy(source.cone);
+      return this;
+    }
+    dispose() {
+      this.line.geometry.dispose();
+      this.line.material.dispose();
+      this.cone.geometry.dispose();
+      this.cone.material.dispose();
+    }
+  };
   if (typeof __THREE_DEVTOOLS__ !== "undefined") {
     __THREE_DEVTOOLS__.dispatchEvent(new CustomEvent("register", { detail: {
       revision: REVISION
@@ -18101,9 +18339,7 @@
       for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
           const pos = new Vector3(xSize / 4 * (1 + 1 / 3) * x, 0, ySize / 4 * (1 + 1 / 3) * y);
-          pos.y = this.random(-25, 25);
-          pos.x += this.random(-10, 10);
-          pos.z += this.random(-10, 10);
+          pos.y = this.random(-5, 5);
           const sphereMesh = new Mesh(new SphereGeometry(1, 32, 16), new MeshBasicMaterial({ color: 16776960 }));
           sphereMesh.position.set(pos.x, pos.y, pos.z);
           this._nodes[y].push(sphereMesh);
@@ -18130,22 +18366,55 @@
       }
       return this.deCasteljau(z, curve);
     }
-    deCasteljau(x, points) {
-      if (points.length != 4)
-        throw new Error("only 4 ctrlPOints please");
-      const B00 = points[0];
-      const B01 = points[1];
-      const B02 = points[2];
-      const B03 = points[3];
-      const B10 = this.lerp(B00, B01, x);
-      const B11 = this.lerp(B01, B02, x);
-      const B12 = this.lerp(B02, B03, x);
-      const B20 = this.lerp(B10, B11, x);
-      const B21 = this.lerp(B11, B12, x);
-      return this.lerp(B20, B21, x);
+    deCasteljau(t, points) {
+      if (points.length === 1)
+        return points[0];
+      const newPoints = new Array();
+      for (let i = 0; i < points.length - 1; i++)
+        newPoints.push(this.lerp(points[i], points[i + 1], t));
+      return this.deCasteljau(t, newPoints);
+    }
+    deCasteljauSlope(t, points) {
+      const newPoints = new Array();
+      for (let i = 0; i < points.length - 1; i++)
+        newPoints.push(this.lerp(points[i], points[i + 1], t));
+      if (newPoints.length === 2) {
+        return newPoints[1].sub(newPoints[0]).multiplyScalar(3);
+      }
+      return this.deCasteljauSlope(t, newPoints);
+    }
+    slope(points, t) {
+      const smallerPoints = this.deCasteljau(t, points);
+      const x1 = smallerPoints[0][0];
+      const y1 = smallerPoints[0][1];
+      const x2 = smallerPoints[smallerPoints.length - 1][0];
+      const y2 = smallerPoints[smallerPoints.length - 1][1];
+      const slope = (y2 - y1) / (x2 - x1);
+      return slope;
+    }
+    getSlope(t) {
+      const x = 1 - t.x / this._gridMesh.width;
+      const z = 1 - t.z / this._gridMesh.height;
+      const curve = new Array();
+      for (let i = 0; i < this._nodes.length; i++) {
+        const row2 = this._nodes[i].map((s) => s.position);
+        curve.push(this.deCasteljau(x, row2));
+      }
+      return this.deCasteljau(z, curve);
+      const row = this._nodes[0].map((s) => s.position);
+    }
+    getSlopy(u, v, w) {
+      const x = 1 - u / this._gridMesh.width;
+      const z = 1 - w / this._gridMesh.height;
+      const curve = new Array();
+      for (let i = 0; i < this._nodes.length; i++) {
+        const row = this._nodes[i].map((s) => s.position);
+        curve.push(this.deCasteljauSlope(x, row));
+      }
+      return this.deCasteljauSlope(z, curve);
     }
     lerp(A, B, t) {
-      return new Vector3(t * A.x + (1 - t) * B.x, t * A.y + (1 - t) * B.y, t * A.z + (1 - t) * B.z);
+      return new Vector3((1 - t) * A.x + t * B.x, (1 - t) * A.y + t * B.y, (1 - t) * A.z + t * B.z);
     }
     random(min, max) {
       return Math.random() * (max - min) + min;
@@ -18831,18 +19100,28 @@
   var App = class {
     constructor() {
       this.divForDisplay = document.getElementById("page-3-bezier-surfaces");
+      this.onPointerMove = (event) => {
+        const factor = 1 + 50 / window.innerHeight;
+        this._pointer.x = event.clientX / window.innerWidth * 2 - 1;
+        this._pointer.y = -(event.clientY * factor / window.innerHeight) * 2 + 1;
+        console.error(event.clientY + "  " + window.innerHeight);
+      };
+      window.addEventListener("pointermove", this.onPointerMove);
       this._scene = new Scene();
       this._camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1e3);
+      this._arrow = new ArrowHelper(new Vector3(), new Vector3(), 12, 267386880, 4, 3);
+      this._scene.add(this._arrow);
+      this._raycaster = new Raycaster();
+      this._pointer = new Vector2();
       this._renderer = new WebGLRenderer();
       this._renderer.setSize(window.innerWidth, window.innerHeight - 50);
       this.divForDisplay?.appendChild(this._renderer.domElement);
       this._scene.background = new Color(16777215);
       const geometry = new MeshGrid(50, 50, 30, 30);
-      const lol = new BezierMesh(geometry);
-      this._scene.add(lol.getRenderable());
+      this._bezier = new BezierMesh(geometry);
+      this._scene.add(this._bezier.getRenderable());
       let material = new MeshBasicMaterial({ color: 13882323 });
-      let plane = new Mesh(geometry, material);
-      this._scene.add(plane);
+      this._plane = new Mesh(geometry, material);
       let wireframe = new WireframeGeometry(geometry);
       let line = new LineSegments(wireframe);
       line.material.color.setHex(0);
@@ -18853,6 +19132,21 @@
       this._controls.update();
     }
     animate() {
+      this._raycaster.setFromCamera(this._pointer, this._camera);
+      if (this._plane) {
+        const intersects = this._raycaster.intersectObjects([this._plane]);
+        const iPoint = intersects[0]?.point;
+        if (iPoint) {
+          this._arrow.visible = true;
+          this._arrow.origin = iPoint;
+          this._scene.remove(this._arrow);
+          const dir = this._bezier.getSlopy(iPoint.x, 0, iPoint.z);
+          console.error("DIR;", dir);
+          dir.normalize();
+          this._arrow = new ArrowHelper(dir, iPoint, 12, 267386880, 4, 3);
+          this._scene.add(this._arrow);
+        }
+      }
       requestAnimationFrame(() => this.animate());
       this._controls.update();
       this._renderer.render(this._scene, this._camera);
