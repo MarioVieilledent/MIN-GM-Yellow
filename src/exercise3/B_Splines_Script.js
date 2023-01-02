@@ -111,8 +111,17 @@ function initBSplines() {
                 const db = calculateDeBoor();
 
                 // Draws the B-Spline with all points
-                for (let i = 0; i < db.cp.length - 1; i++) {
+                for (let i = 0; i < db.cp.length - 2; i++) {
                     drawLine(ctx_splines, db.cp[i][n][0], db.cp[i + 1][n][0], RED);
+                }
+
+                // Draws intermediate points and lines
+                for (let a = 1; a < n; a++) {
+                    for (let b = 0; b <= n - a - 1; b++) {
+                        drawPoint(ctx_splines, db.cp[uIndex][a][b], 4, BLUE);
+                        drawPoint(ctx_splines, db.cp[uIndex][a][b + 1], 4, BLUE);
+                        drawLine(ctx_splines, db.cp[uIndex][a][b], db.cp[uIndex][a][b + 1], BLUE);
+                    }
                 }
 
                 // Draws moving point with its value
