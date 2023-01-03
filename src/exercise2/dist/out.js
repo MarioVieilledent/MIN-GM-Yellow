@@ -18339,7 +18339,7 @@
       for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
           const pos = new Vector3(xSize / 4 * (1 + 1 / 3) * x, 0, ySize / 4 * (1 + 1 / 3) * y);
-          pos.y = this.random(-5, 5);
+          pos.y = this.random(-15, 15);
           const sphereMesh = new Mesh(new SphereGeometry(1, 32, 16), new MeshBasicMaterial({ color: 16776960 }));
           sphereMesh.position.set(pos.x, pos.y, pos.z);
           this._nodes[y].push(sphereMesh);
@@ -18383,25 +18383,15 @@
       }
       return this.deCasteljauSlope(t, newPoints);
     }
-    slope(points, t) {
-      const smallerPoints = this.deCasteljau(t, points);
-      const x1 = smallerPoints[0][0];
-      const y1 = smallerPoints[0][1];
-      const x2 = smallerPoints[smallerPoints.length - 1][0];
-      const y2 = smallerPoints[smallerPoints.length - 1][1];
-      const slope = (y2 - y1) / (x2 - x1);
-      return slope;
-    }
-    getSlope(t) {
-      const x = 1 - t.x / this._gridMesh.width;
-      const z = 1 - t.z / this._gridMesh.height;
+    getSlopx(u, v, w) {
+      const x = 1 - u / this._gridMesh.width;
+      const z = 1 - w / this._gridMesh.height;
       const curve = new Array();
       for (let i = 0; i < this._nodes.length; i++) {
-        const row2 = this._nodes[i].map((s) => s.position);
-        curve.push(this.deCasteljau(x, row2));
+        const row = this._nodes[i].map((s) => s.position);
+        curve.push(this.deCasteljau(z, row));
       }
-      return this.deCasteljau(z, curve);
-      const row = this._nodes[0].map((s) => s.position);
+      return this.deCasteljauSlope(x, curve);
     }
     getSlopy(u, v, w) {
       const x = 1 - u / this._gridMesh.width;
@@ -18409,7 +18399,7 @@
       const curve = new Array();
       for (let i = 0; i < this._nodes.length; i++) {
         const row = this._nodes[i].map((s) => s.position);
-        curve.push(this.deCasteljauSlope(x, row));
+        curve.push(this.deCasteljau(x, row));
       }
       return this.deCasteljauSlope(z, curve);
     }
@@ -19101,16 +19091,19 @@
     constructor() {
       this.divForDisplay = document.getElementById("page-3-bezier-surfaces");
       this.onPointerMove = (event) => {
-        const factor = 1 + 50 / window.innerHeight;
+        const factor = 1;
         this._pointer.x = event.clientX / window.innerWidth * 2 - 1;
         this._pointer.y = -(event.clientY * factor / window.innerHeight) * 2 + 1;
-        console.error(event.clientY + "  " + window.innerHeight);
       };
       window.addEventListener("pointermove", this.onPointerMove);
       this._scene = new Scene();
       this._camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1e3);
-      this._arrow = new ArrowHelper(new Vector3(), new Vector3(), 12, 267386880, 4, 3);
-      this._scene.add(this._arrow);
+      this._arrowX = new ArrowHelper(new Vector3(), new Vector3(), 12, 267386880, 4, 3);
+      this._arrowY = new ArrowHelper(new Vector3(), new Vector3(), 12, 267386880, 4, 3);
+      this._arrowZ = new ArrowHelper(new Vector3(), new Vector3(), 12, 267386880, 4, 3);
+      this._scene.add(this._arrowX);
+      this._scene.add(this._arrowY);
+      this._scene.add(this._arrowZ);
       this._raycaster = new Raycaster();
       this._pointer = new Vector2();
       this._renderer = new WebGLRenderer();
@@ -19137,14 +19130,23 @@
         const intersects = this._raycaster.intersectObjects([this._plane]);
         const iPoint = intersects[0]?.point;
         if (iPoint) {
-          this._arrow.visible = true;
-          this._arrow.origin = iPoint;
-          this._scene.remove(this._arrow);
-          const dir = this._bezier.getSlopy(iPoint.x, 0, iPoint.z);
-          console.error("DIR;", dir);
-          dir.normalize();
-          this._arrow = new ArrowHelper(dir, iPoint, 12, 267386880, 4, 3);
-          this._scene.add(this._arrow);
+          this._arrowX.visible = true;
+          this._arrowY.visible = true;
+          this._arrowZ.visible = true;
+          this._scene.remove(this._arrowX);
+          this._scene.remove(this._arrowY);
+          this._scene.remove(this._arrowZ);
+          const dirZ = this._bezier.getSlopy(iPoint.x, iPoint.y, iPoint.z);
+          const dirX = this._bezier.getSlopx(iPoint.x, iPoint.y, iPoint.z);
+          dirX.normalize();
+          dirZ.normalize();
+          const dirGreen = new Vector3(dirZ.z, dirZ.y, dirZ.x);
+          this._arrowX = new ArrowHelper(dirX, iPoint, 12, 16711680, 4, 3);
+          this._arrowY = new ArrowHelper(dirX.cross(dirGreen), iPoint, 12, 255, 4, 3);
+          this._arrowZ = new ArrowHelper(dirGreen, iPoint, 12, 65280, 4, 3);
+          this._scene.add(this._arrowX);
+          this._scene.add(this._arrowY);
+          this._scene.add(this._arrowZ);
         }
       }
       requestAnimationFrame(() => this.animate());

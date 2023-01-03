@@ -21,7 +21,7 @@ export class BezierMesh {
             for (let y = 0; y < 4; y++) {
                 const pos = new Vector3(xSize / 4 * (1 + (1 / 3)) * x, 0, ySize / 4 * (1 + (1 / 3)) * y);
                 //pos.y = 0;
-                pos.y = this.random(-5, 5);
+                pos.y = this.random(-15, 15);
                 //pos.y = this.random(-25, 25);
                 //pos.x += this.random(-10, 10);
                 //pos.z += this.random(-10, 10);
@@ -82,33 +82,17 @@ export class BezierMesh {
         return this.deCasteljauSlope(t, newPoints);
     }
 
-
-
-    slope(points: Array<Vector3>, t: number): Vector3 {
-        // Berechne die Kontrollpunkte der kleineren Kurve
-        const smallerPoints = this.deCasteljau(t, points);
-      
-        // Berechne die Steigung der Linie zwischen den ersten und letzten Kontrollpunkten
-        const x1 = smallerPoints[0][0];
-        const y1 = smallerPoints[0][1];
-        const x2 = smallerPoints[smallerPoints.length - 1][0];
-        const y2 = smallerPoints[smallerPoints.length - 1][1];
-        const slope = (y2 - y1) / (x2 - x1);
-      
-        return slope;
-      }
-    getSlope(t:Vector3):Vector3{
-        const x = 1 - t.x / this._gridMesh.width;
-        const z = 1 - t.z / this._gridMesh.height;
+    getSlopx(u: number, v: number, w: number): Vector3 {
+        const x = 1 - u / this._gridMesh.width;
+        const z = 1 - w / this._gridMesh.height;
         const curve = new Array<Vector3>();
         for (let i = 0; i < this._nodes.length; i++) {
             const row = this._nodes[i].map(s => (s.position));    //get c-points of row i and remove x component
-            curve.push(this.deCasteljau(x, row));
+            curve.push(this.deCasteljau(z, row));
         }
-        return this.deCasteljau(z, curve);
-            const row = this._nodes[0].map(s => (s.position));    //get c-points of row i and remove x component
-    }
 
+        return this.deCasteljauSlope(x, curve);
+    }
 
     getSlopy(u: number, v: number, w: number): Vector3 {
         const x = 1 - u / this._gridMesh.width;
@@ -116,7 +100,7 @@ export class BezierMesh {
         const curve = new Array<Vector3>();
         for (let i = 0; i < this._nodes.length; i++) {
             const row = this._nodes[i].map(s => (s.position));    //get c-points of row i and remove x component
-            curve.push(this.deCasteljauSlope(x, row));
+            curve.push(this.deCasteljau(x, row));
         }
         return this.deCasteljauSlope(z, curve);
     }
@@ -149,4 +133,5 @@ export class BezierMesh {
         }
         return g;
     }
+
 }
