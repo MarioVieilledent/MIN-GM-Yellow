@@ -7,8 +7,8 @@
 
 let nurbs; // Nurb object that is displayed
 
-mousePressed_nurbs = -1; // If the mouse is pressed or not, and witch point is pressed
-mousePos_nurbs = [0.0, 0.0]; // Position of mouse for moving points
+let mousePressed_nurbs = -1; // If the mouse is pressed or not, and witch point is pressed
+let mousePos_nurbs = [0.0, 0.0]; // Position of mouse for moving points
 
 // User input for weights
 const Wi_input_selector = document.getElementById('Wi_input_selector');
@@ -87,20 +87,34 @@ function initNurbs() {
             reveresNurbs && iNurbs > 0 ? iNurbs-- : reveresNurbs = false;
             !reveresNurbs && iNurbs < stepNurbs ? iNurbs++ : reveresNurbs = true;
 
-            drawPoint(ctx_nurbs, nurbs.rationalerDeCasteljau(iNurbs / stepNurbs)[nurbs.n][0], 12, RED);
+            drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0], 12, RED);
 
             // Draws intermediate points and lines
             for (let a = 1; a < nurbs.n; a++) {
                 for (let b = 0; b <= nurbs.n - a - 1; b++) {
-                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs][a][b], 4, BLUE);
-                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs][a][b + 1], 4, BLUE);
-                    drawLine(ctx_nurbs, pointsNurbs[iNurbs][a][b], pointsNurbs[iNurbs][a][b + 1], BLUE);
+                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[a][b], 4, BLUE);
+                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[a][b + 1], 4, BLUE);
+                    drawLine(ctx_nurbs, pointsNurbs[iNurbs].bt[a][b], pointsNurbs[iNurbs].bt[a][b + 1], BLUE);
                 }
             }
 
             // Draws the curve
             for (let i = 0; i < pointsNurbs.length - 1; i++) {
-                drawLine(ctx_nurbs, pointsNurbs[i][nurbs.n][0], pointsNurbs[i + 1][nurbs.n][0], RED);
+                drawLine(ctx_nurbs, pointsNurbs[i].bt[nurbs.n][0], pointsNurbs[i + 1].bt[nurbs.n][0], RED);
+            }
+
+
+            // Draws the tangent vector
+            if (reveresNurbs) {
+                drawArrow(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0],
+                    [pointsNurbs[iNurbs].bt[nurbs.n][0][0] - pointsNurbs[iNurbs].tv[0],
+                    pointsNurbs[iNurbs].bt[nurbs.n][0][1] - pointsNurbs[iNurbs].tv[1]],
+                    YELLOW);
+            } else {
+                drawArrow(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0],
+                    [pointsNurbs[iNurbs].bt[nurbs.n][0][0] + pointsNurbs[iNurbs].tv[0],
+                    pointsNurbs[iNurbs].bt[nurbs.n][0][1] + pointsNurbs[iNurbs].tv[1]],
+                    YELLOW);
             }
         }
     }, delay);

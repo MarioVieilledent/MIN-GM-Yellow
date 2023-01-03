@@ -19140,7 +19140,7 @@
           this._arrow.visible = true;
           this._arrow.origin = iPoint;
           this._scene.remove(this._arrow);
-          const dir = this._bezier.getSlopy(iPoint.x, 0, iPoint.z);
+          const dir = this._bezier.getSlopy(iPoint.x, iPoint.y, iPoint.z);
           console.error("DIR;", dir);
           dir.normalize();
           this._arrow = new ArrowHelper(dir, iPoint, 12, 267386880, 4, 3);

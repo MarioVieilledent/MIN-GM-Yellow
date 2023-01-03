@@ -139,7 +139,6 @@ function initBSplines() {
                         YELLOW);
                 }
 
-
                 // Increment or decrement uIndex for animation
                 !reverseBSpline && uIndex < db.tv.length - 1 ? uIndex++ : reverseBSpline = true;
                 reverseBSpline && uIndex > 0 ? uIndex-- : reverseBSpline = false;
