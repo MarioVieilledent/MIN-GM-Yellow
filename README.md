@@ -88,6 +88,10 @@ JS script is already transpiled into an out js file. Otherwise, in the `./src/ex
 
 `npm run build`
 
+To check unit Tests:
+
+`npm run test`
+
 Open either with`./exercise2/dist/index.html` for test, or `./index.html` on page `3. Bézier Surfaces`.
 
 ## 4. B-Splines
