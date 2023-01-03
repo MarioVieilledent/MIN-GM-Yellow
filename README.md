@@ -48,6 +48,8 @@ The code is commented in English. We implemented all algorithm by our own follow
 
 There's a test file for Bézier Curves that do some tests and display in console results.
 
+![Preview of exercise 2](./src/assets/ex2-prev.png)
+
 ### Language & features
 
 Raw JavaScript is used, HTML canvas for drawing points and lines in web page.
@@ -72,6 +74,8 @@ $$B_j^n(t)=\binom{n}{j}t^j(1-t)^{n-j}$$
 
 > Core file for this exercise is `./src/exercise2/src/Bezier.ts`
 
+![Preview of exercise 3](./src/assets/ex3-prev.png)
+
 ### Language & features
 
 Made in TypeScript with `three.js`.
@@ -89,6 +93,8 @@ Open either with`./exercise2/dist/index.html` for test, or `./index.html` on pag
 ## 4. B-Splines
 
 > Core file for this exercise is `./src/exercise3/B_Splines.js`
+
+![Preview of exercise 4](./src/assets/ex4-prev.png)
 
 ### Features
 
@@ -115,6 +121,8 @@ Are displayed:
 > Core file for this exercise is `./src/exercise4/NURBS.js`
 
 There is a test file for NURBS, its result is displayed in the console.
+
+![Preview of exercise 5](./src/assets/ex5-prev.png)
 
 ### Features
 
