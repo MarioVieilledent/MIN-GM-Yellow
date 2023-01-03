@@ -26,6 +26,11 @@ Wi_input_selector.addEventListener('change', event => {
     setUpNurbs();
 });
 
+// Animation
+let iNurbs = 0; // index for variable t
+let reveresNurbs = false; // Direction of animation
+const stepNurbs = 500; // Steps for t going from 0 to 1
+
 // Canvas and context to draw graphics in web page
 let canvas_nurbs_holder = document.getElementById('nurbs-canvas-holder');
 let canvas_nurbs = document.getElementById('canvas-ex4');
@@ -61,20 +66,41 @@ function initNurbs() {
         ctx_nurbs.fillStyle = '#444342';
         ctx_nurbs.fillRect(0, 0, width, height);
 
-        // Draws the control points
-        nurbs.b.forEach(controlPoint => {
-            drawPoint(ctx_nurbs, controlPoint, 12, GREY);
-        });
-
-        // Draws control polygon
-        for (let i = 0; i < nurbs.n; i++) {
-            drawLine(ctx_nurbs, nurbs.b[i], nurbs.b[i + 1], WHITE);
-        }
-
-        // Draw the NURBS
         if (UiOk) {
-            for (let t = 0.0; t < 1; t += step) {
-                drawLine(ctx_nurbs, nurbs.rationalerDeCasteljau(t)[nurbs.n][0], nurbs.rationalerDeCasteljau(t + step)[nurbs.n][0], RED);
+            // Draws the control points
+            nurbs.b.forEach(controlPoint => {
+                drawPoint(ctx_nurbs, controlPoint, 12, GREY);
+            });
+
+            // Draws control polygon
+            for (let i = 0; i < nurbs.n; i++) {
+                drawLine(ctx_nurbs, nurbs.b[i], nurbs.b[i + 1], WHITE);
+            }
+
+            // Saves all points of NURBS
+            let pointsNurbs = [];
+            for (let tIndex = 0; tIndex <= stepNurbs; tIndex++) {
+                pointsNurbs.push(nurbs.rationalerDeCasteljau(tIndex / stepNurbs));
+            }
+
+            // Animation
+            reveresNurbs && iNurbs > 0 ? iNurbs-- : reveresNurbs = false;
+            !reveresNurbs && iNurbs < stepNurbs ? iNurbs++ : reveresNurbs = true;
+
+            drawPoint(ctx_nurbs, nurbs.rationalerDeCasteljau(iNurbs / stepNurbs)[nurbs.n][0], 12, RED);
+
+            // Draws intermediate points and lines
+            for (let a = 1; a < nurbs.n; a++) {
+                for (let b = 0; b <= nurbs.n - a - 1; b++) {
+                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs][a][b], 4, BLUE);
+                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs][a][b + 1], 4, BLUE);
+                    drawLine(ctx_nurbs, pointsNurbs[iNurbs][a][b], pointsNurbs[iNurbs][a][b + 1], BLUE);
+                }
+            }
+
+            // Draws the curve
+            for (let i = 0; i < pointsNurbs.length - 1; i++) {
+                drawLine(ctx_nurbs, pointsNurbs[i][nurbs.n][0], pointsNurbs[i + 1][nurbs.n][0], RED);
             }
         }
     }, delay);
