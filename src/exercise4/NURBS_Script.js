@@ -7,8 +7,8 @@
 
 let nurbs; // Nurb object that is displayed
 
-mousePressed_nurbs = -1; // If the mouse is pressed or not, and witch point is pressed
-mousePos_nurbs = [0.0, 0.0]; // Position of mouse for moving points
+let mousePressed_nurbs = -1; // If the mouse is pressed or not, and witch point is pressed
+let mousePos_nurbs = [0.0, 0.0]; // Position of mouse for moving points
 
 // User input for weights
 const Wi_input_selector = document.getElementById('Wi_input_selector');
@@ -25,6 +25,11 @@ Wi_input_selector.addEventListener('change', event => {
     window.localStorage.setItem(localStorageWi, JSON.stringify(nurbs.w));
     setUpNurbs();
 });
+
+// Animation
+let iNurbs = 0; // index for variable t
+let reveresNurbs = false; // Direction of animation
+const stepNurbs = 500; // Steps for t going from 0 to 1
 
 // Canvas and context to draw graphics in web page
 let canvas_nurbs_holder = document.getElementById('nurbs-canvas-holder');
@@ -61,20 +66,55 @@ function initNurbs() {
         ctx_nurbs.fillStyle = '#444342';
         ctx_nurbs.fillRect(0, 0, width, height);
 
-        // Draws the control points
-        nurbs.b.forEach(controlPoint => {
-            drawPoint(ctx_nurbs, controlPoint, 12, GREY);
-        });
-
-        // Draws control polygon
-        for (let i = 0; i < nurbs.n; i++) {
-            drawLine(ctx_nurbs, nurbs.b[i], nurbs.b[i + 1], WHITE);
-        }
-
-        // Draw the NURBS
         if (UiOk) {
-            for (let t = 0.0; t < 1; t += step) {
-                drawLine(ctx_nurbs, nurbs.rationalerDeCasteljau(t)[nurbs.n][0], nurbs.rationalerDeCasteljau(t + step)[nurbs.n][0], RED);
+            // Draws the control points
+            nurbs.b.forEach(controlPoint => {
+                drawPoint(ctx_nurbs, controlPoint, 12, GREY);
+            });
+
+            // Draws control polygon
+            for (let i = 0; i < nurbs.n; i++) {
+                drawLine(ctx_nurbs, nurbs.b[i], nurbs.b[i + 1], WHITE);
+            }
+
+            // Saves all points of NURBS
+            let pointsNurbs = [];
+            for (let tIndex = 0; tIndex <= stepNurbs; tIndex++) {
+                pointsNurbs.push(nurbs.rationalerDeCasteljau(tIndex / stepNurbs));
+            }
+
+            // Animation
+            reveresNurbs && iNurbs > 0 ? iNurbs-- : reveresNurbs = false;
+            !reveresNurbs && iNurbs < stepNurbs ? iNurbs++ : reveresNurbs = true;
+
+            drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0], 12, RED);
+
+            // Draws intermediate points and lines
+            for (let a = 1; a < nurbs.n; a++) {
+                for (let b = 0; b <= nurbs.n - a - 1; b++) {
+                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[a][b], 4, BLUE);
+                    drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[a][b + 1], 4, BLUE);
+                    drawLine(ctx_nurbs, pointsNurbs[iNurbs].bt[a][b], pointsNurbs[iNurbs].bt[a][b + 1], BLUE);
+                }
+            }
+
+            // Draws the curve
+            for (let i = 0; i < pointsNurbs.length - 1; i++) {
+                drawLine(ctx_nurbs, pointsNurbs[i].bt[nurbs.n][0], pointsNurbs[i + 1].bt[nurbs.n][0], RED);
+            }
+
+
+            // Draws the tangent vector
+            if (reveresNurbs) {
+                drawArrow(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0],
+                    [pointsNurbs[iNurbs].bt[nurbs.n][0][0] - pointsNurbs[iNurbs].tv[0],
+                    pointsNurbs[iNurbs].bt[nurbs.n][0][1] - pointsNurbs[iNurbs].tv[1]],
+                    YELLOW);
+            } else {
+                drawArrow(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0],
+                    [pointsNurbs[iNurbs].bt[nurbs.n][0][0] + pointsNurbs[iNurbs].tv[0],
+                    pointsNurbs[iNurbs].bt[nurbs.n][0][1] + pointsNurbs[iNurbs].tv[1]],
+                    YELLOW);
             }
         }
     }, delay);

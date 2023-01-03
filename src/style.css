@@ -119,7 +119,13 @@ body {
     font-size: 16px;
 }
 
-page-2-bezier-curves .block>.property-value>.equals {
+.span-info {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.page-2-bezier-curves .block>.property-value>.equals {
     font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
 }

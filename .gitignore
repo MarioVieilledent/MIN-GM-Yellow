@@ -1,4 +1,4 @@
 *.pdf
-node_modulcs
+node_modules
 package-lock.json
 
