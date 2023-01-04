@@ -11,6 +11,7 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="intro-style.css">
 </head>
 
 <!--
@@ -55,7 +56,170 @@ Mario.
         </div>
         <div class="content flex">
             <div class="page-1-introduction" id="page-1-introduction">
-                <h3>Introduction</h3>
+                <h1 id="gm-project-work">GM - Project Work</h1>
+                <p><img src="https://img.shields.io/github/languages/top/MarioVieilledent/MIN-GM-Yellow"
+                        alt="GitHub top language"></p>
+                <p>Project Work for MIN-GM, <strong>Group Yellow</strong>.</p>
+                <h2 id="1-introduction">1. Introduction</h2>
+                <p>This repository contains all files for the MIN-GM project, winter semester 2022/2023, group Yellow.
+                    It contains a web page and js script files implementing Bézier curves, Bézier Surfaces, B-Splines
+                    and NURBS, as well as test files.</p>
+                <p>This README file is the documentation of our project.</p>
+                <h3 id="run">Run</h3>
+                <p>Open <code>./src/index.html</code>, no need of web-server.</p>
+                <h3 id="architecture">Architecture</h3>
+                <ul>
+                    <li><code>src</code>
+                        <ul>
+                            <li><code>exercise1</code> All files for Bézier Curves</li>
+                            <li><code>exercise2</code> All files for Bézier Surfaces<ul>
+                                    <li><code>dist</code> All TypeScript code for Bézier Surfaces</li>
+                                    <li><code>src</code> Already transpiled JavaScript code</li>
+                                </ul>
+                            </li>
+                            <li><code>exercise3</code> All files for B-Splines</li>
+                            <li><code>exercise4</code> All files for NURBS</li>
+                            <li><code>script</code> Contains JS glue as a minimal framework<ul>
+                                    <li><code>canvasDrawer.js</code> contains functions to easily draw points, lines,
+                                        arrows into the canvases</li>
+                                    <li><code>framework.js</code> handles the switch between pages, no official
+                                        framework is used though, just some JS glue</li>
+                                </ul>
+                            </li>
+                            <li><code>index.html</code> Final project elements</li>
+                            <li><code>style.css</code> Style for single HTML page</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3 id="code">Code</h3>
+                <p>The code is commented in English. We implemented all algorithms by our own following the
+                    lecture&#39;s slides.</p>
+                <h3 id="members-of-yellow-group-and-work-repartition">Members of Yellow Group and work repartition</h3>
+                <ul>
+                    <li><strong>Mario Vieilledent</strong> took care of 2D implementation of algorithms for Bézier
+                        Curves, B-Splines and NURBS using HTML canvas and JavaScript.</li>
+                    <li><strong>Hesse Henri</strong> adapted the algorithms for 3D spaces using the library
+                        <code>three.js</code> with TypeScript.
+                    </li>
+                </ul>
+                <h2 id="2-b-zier-curve">2. Bézier Curve</h2>
+                <blockquote>
+                    <p>Core file for this exercise is <code>./src/exercise1/Bezier_Curves.js</code></p>
+                </blockquote>
+                <p>There&#39;s a test file for Bézier Curves that executes some tests and display the results into the
+                    console.</p>
+                <p><img src="./assets/ex2-prev.png" alt="Preview of exercise 2"></p>
+                <h3 id="language-features">Language &amp; features</h3>
+                <p>Raw JavaScript is used, HTML canvas for drawing points and lines in web page.</p>
+                <p>The 4 control points can be moved by the mouse in the canvas.</p>
+                <p>Are displayed:</p>
+                <ul>
+                    <li>Control points and polygon</li>
+                    <li>Intermediate points and lines</li>
+                    <li>Bézier curve</li>
+                    <li>An animation showing<ul>
+                            <li>a moving point</li>
+                            <li>its tangent vector</li>
+                            <li>Bernstein polynomials values applied for each point at a variable t</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h2 id="3-b-zier-surface">3. Bézier Surface</h2>
+                <blockquote>
+                    <p>Core file for this exercise is <code>./src/exercise2/src/Bezier.ts</code></p>
+                </blockquote>
+                <p>There is as well unit tests, <code>npm run test</code>.</p>
+                <p><img src="./assets/ex3-prev.png" alt="Preview of exercise 3"></p>
+                <h3 id="language-features">Language &amp; features</h3>
+                <p>Made in TypeScript with <code>three.js</code>.</p>
+                <h3 id="build-js-dest-file">Build js dest file</h3>
+                <p>JS script is already transpiled into an out js file. Otherwise, install dependencies and run project,
+                    in the <code>./src/exercice2</code> folder:</p>
+                <blockquote>
+                    <p><code>npm install</code>
+                        <code>npm run build</code>
+                    </p>
+                </blockquote>
+                <p>Open either with<code>./exercise2/dist/index.html</code> for test, or <code>./src/index.html</code>
+                    on page <code>3. Bézier Surfaces</code>.</p>
+                <h3 id="test">Test</h3>
+                <p>To check unit tests, in the <code>./src/exercice2</code> folder:</p>
+                <blockquote>
+                    <p><code>npm run test</code></p>
+                </blockquote>
+                <h2 id="4-b-splines">4. B-Splines</h2>
+                <blockquote>
+                    <p>Core file for this exercise is <code>./src/exercise3/B_Splines.js</code></p>
+                </blockquote>
+                <p><img src="./assets/ex4-prev.png" alt="Preview of exercise 4"></p>
+                <h3 id="features">Features</h3>
+                <p>There&#39;s two input values:</p>
+                <ul>
+                    <li><code>n</code> for specifying the degree of B-Spline</li>
+                    <li><code>Ui</code>, the list of u values, is checked to be an increasing (or equal) list of numbers
+                    </li>
+                </ul>
+                <p>These two inputs determine the number of control points (Di in code). They are placed right above
+                    their corresponding epsilon abscissae, at a random height. They are recalculated for each
+                    modification of input.</p>
+                <p>An abscissae is drawn under the B-Spline displaying <code>Ui</code> values and <code>Epsilons</code>
+                    with small triangles.</p>
+                <p>It is possible to move the control points with the mouse.</p>
+                <p>Are displayed:</p>
+                <ul>
+                    <li>Control points and polygon</li>
+                    <li>Intermediate points and lines <em>(if <code>n=2</code>, there will be only one intermediate line
+                            at once)</em></li>
+                    <li>B-Spline curve</li>
+                    <li>An animation showing<ul>
+                            <li>a moving point</li>
+                            <li>its tangent vector</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3 id="c0-continuity">C0 continuity</h3>
+                <p>It is interesting to change parameters to observe tangent vector behavior at the point in the middle,
+                    where we can see a break in the curve, so we can feel the C0 continuity.</p>
+                <p>The following example behave like two Bézier Curves of degree 3 with a common point placed so it is
+                    only C0 continuous.</p>
+                <p><img src="./assets/C0-continuity-prev.png" alt="C0 continuity preview"></p>
+                <h3 id="c1-continuity">C1 continuity</h3>
+                <p>In the following example we can see the tangent vector suddenly changing its &quot;moving
+                    direction&quot;. At the point <code>u=3</code>, the curve is C1 continuous.</p>
+                <p><img src="./assets/C1-continuity-prev.png" alt="C1 continuity preview"></p>
+                <h2 id="5-nurbs">5. NURBS</h2>
+                <blockquote>
+                    <p>Core file for this exercise is <code>./src/exercise4/NURBS.js</code></p>
+                </blockquote>
+                <p>There is a test file for NURBS, its result is displayed in the console.</p>
+                <p><img src="./assets/ex5-prev.png" alt="Preview of exercise 5"></p>
+                <h3 id="features">Features</h3>
+                <p>There is only one input: the list of weights. The number of weights determine both the number of
+                    control points (randomly placed) and the n value.</p>
+                <p>It is possible to move the control points with the mouse.</p>
+                <p>Are displayed:</p>
+                <ul>
+                    <li>Control points and polygon</li>
+                    <li>Intermediate points and lines</li>
+                    <li>The curve NURBS</li>
+                    <li>An animation showing<ul>
+                            <li>a moving point</li>
+                            <li>its tangent vector</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h2 id="outcome">Outcome</h2>
+                <p><em>Through this project as well as the lecture sessions, I have made many discoveries and learnt a
+                        lot. I was able to understand the mathematics of the curves we learned, but also to put them
+                        into practice in a code project, which I think is necessary to assimilate any notion.</em></p>
+                <p><em>I can now understand how the majority of curves are constructed and managed in drawing softwares,
+                        modeling softwares, and video games, but I am also able to understand the underlying mathematics
+                        and construct the curves myself.</em></p>
+                <p><em>I am very happy to discover this branch of computer science related to mathematics, which I had
+                        always heard about but never went deeper into it.</em></p>
+                <p><em>Thank you for the courses. Mario Vieilledent.</em></p>
+
+
             </div>
             <div class="page-2-bezier-curves" id="page-2-bezier-curves">
                 <div class="left-part flex-col">
@@ -125,6 +289,7 @@ Mario.
                     <span class="span-info">Ui values should be an increasing list of numbers in JSON format, square
                         brackets not necessary.</span>
                     <span class="span-info">Control points can be moved with the mouse in the canvas.</span>
+                    <span class="span-info">If animation does not display, try to reload the page.</span>
                 </div>
                 <div class="right-part flex-col">
                     <div class="b-splines-canvas-holder" id="b-splines-canvas-holder">
@@ -142,9 +307,9 @@ Mario.
                             <input id="Wi_input_selector" class="large-input" type="text">
                         </div>
                     </div>
+                    <span class="span-info">The number of weight will determine the number of control points.</span>
                     <span class="span-info">Weights should be a list of number in JSON format, square brackets not
                         necessary.</span>
-                    <span class="span-info">Number of points depends on number of weights given as input.</span>
                     <span class="span-info">Control points can be moved with the mouse in the canvas.</span>
                 </div>
                 <div class="right-part flex-col">

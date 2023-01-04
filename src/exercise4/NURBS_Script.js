@@ -29,7 +29,7 @@ Wi_input_selector.addEventListener('change', event => {
 // Animation
 let iNurbs = 0; // index for variable t
 let reveresNurbs = false; // Direction of animation
-const stepNurbs = 500; // Steps for t going from 0 to 1
+const stepNurbs = 700; // Steps for t going from 0 to 1
 
 // Canvas and context to draw graphics in web page
 let canvas_nurbs_holder = document.getElementById('nurbs-canvas-holder');
@@ -87,7 +87,9 @@ function initNurbs() {
             reveresNurbs && iNurbs > 0 ? iNurbs-- : reveresNurbs = false;
             !reveresNurbs && iNurbs < stepNurbs ? iNurbs++ : reveresNurbs = true;
 
-            drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0], 12, RED);
+            // Draws the moving point and its value for animation
+            drawPoint(ctx_nurbs, pointsNurbs[iNurbs].bt[nurbs.n][0], 6, RED);
+            drawText(ctx_nurbs, [pointsNurbs[iNurbs].bt[nurbs.n][0][0] - 15, pointsNurbs[iNurbs].bt[nurbs.n][0][1] - 12], `u=${(iNurbs / stepNurbs).toFixed(2)}`, 12, WHITE);
 
             // Draws intermediate points and lines
             for (let a = 1; a < nurbs.n; a++) {

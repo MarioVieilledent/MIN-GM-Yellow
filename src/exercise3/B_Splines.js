@@ -5,7 +5,7 @@
 let Di = []; // d values (array of int, length depend on n and u)
 let epsilons = []; // Epsilons for plotting Di values
 
-const numberOfSegments = 500; // Number of segments to build the curve and for animation
+const numberOfSegments = 200; // Number of segments to build the curve and for animation
 
 /**
  * Knowing n and Ui values, calculates epsilons with Greville-Abszissen formula 

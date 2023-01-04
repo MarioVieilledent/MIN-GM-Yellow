@@ -1,0 +1,49 @@
+.page-1-introduction {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 60px;
+}
+
+.page-1-introduction img {
+    max-width: 100%;
+}
+
+.page-1-introduction h1 {
+    margin-bottom: 24px;
+}
+
+.page-1-introduction h2 {
+    margin-bottom: 18px;
+}
+
+.page-1-introduction h3 {
+    margin-bottom: 16px;
+}
+
+.page-1-introduction h4 {
+    margin-bottom: 14px;
+}
+
+.page-1-introduction p,
+.page-1-introduction em,
+.page-1-introduction strong {
+    margin-bottom: 12px;
+    color: #ddd;
+    font-size: 14px;
+}
+
+.page-1-introduction ul {
+    margin-left: 24px;
+    margin-bottom: 12px;
+}
+
+.page-1-introduction li {
+    color: #ddd;
+    font-size: 14px;
+}
+
+.page-1-introduction code {
+    font-family: 'Courier New', Courier, monospace;
+    color: orange;
+    font-size: 14px;
+}
